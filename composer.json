@@ -8,9 +8,16 @@
             "email": "eflorea@three29.com"
         }
     ],
-    "minimum-stability": "dev",
     "require": {
         "php": ">=5.4.0"
+    },
+    "require-dev" : {
+        "php": ">=5.4.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "RPC": "src/"
+        }
     },
     "autoload": {
         "psr-0": {
