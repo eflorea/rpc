@@ -1,5 +1,6 @@
 {
     "name": "eflorea/rpc",
+    "license": "MIT",
     "description": "Reusable PHP Components",
     "authors": [
         {
