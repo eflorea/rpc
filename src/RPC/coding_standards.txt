@@ -1,0 +1,479 @@
+Indenting and Line Length
+=========================
+
+Use an indent of 1 tab.
+
+It  is  recommended  that  you  break  lines  at  approximately  75-85
+characters.
+
+Control Structures
+==================
+
+These include if, for, while, switch, etc. Here is an example if statement,
+since it is the most complicated of them:
+
+	if( ( condition1 ) ||
+	    ( condition2 ) )
+	{
+		action1;
+	}
+	elseif( ( condition3 ) &&
+	        ( condition4 ) )
+	{
+		action2;
+	}
+	else
+	{
+		defaultaction;
+	}
+
+Control  statements  should have no space between the control keyword
+and opening parenthesis. There should be one space after the opening
+parenthesis and before the closing parenthesis as well as for any other
+parentheses inside the condition.
+
+Always  use  curly  braces even in situations  where they are technically
+optional. Having them increases readability  and  decreases  the  likelihood
+of  logic  errors  being introduced when new lines are added.
+
+For switch statements:
+
+	switch( condition )
+	{
+		case 1:
+			action1;
+			break;
+	
+		case 2:
+			action2;
+			break;
+	
+		default:
+			defaultaction;
+			break;
+	}
+
+Function Calls
+==============
+
+Functions should be called with no spaces between the function name and the
+opening parenthesis; spaces between commas and each
+parameter, and between the first parameter and the opening parenthesis, 
+and between the last parameter and the closing parenthesis; no space between
+the last parenthesis and the semicolon. Here's an example:
+
+	$var = foo( $bar, $baz, $quux );
+
+As  displayed  above,  there  should be one space on either side of an
+equals  sign  used  to  assign  the  return  value  of a function to a
+variable.  In  the  case of a block of related assignments, more space
+may be inserted to promote readability:
+
+	$short         = foo( $bar );
+	$long_variable = foo( $baz );
+
+Function Definitions
+====================
+
+Function declarations follow the "one true brace" convention:
+
+	function fooFunction( $arg1, $arg2 = '' )
+	{
+		if( condition )
+		{
+			statement;
+		}
+	    
+		return $val;
+	}
+
+Arguments  with  default  values  go  at the end of the argument list.
+Always  attempt to return a meaningful value from a function if one is
+appropriate. Here is a slightly longer example:
+
+	function connect( &$dsn, $persistent = false )
+	{
+		if( is_array( $dsn ) )
+		{
+			$dsninfo =& $dsn;
+		}
+		else
+		{
+			$dsninfo = DB::parseDSN( $dsn );
+		}
+		
+		if( ! $dsninfo ||
+		    ! $dsninfo['phptype'] )
+		{
+			return $this->raiseError();
+		}
+		
+		return true;
+	}
+
+Comments
+========
+
+Complete inline documentation comment blocks (docblocks) must be provided.
+Further information can be found on the phpDocumentor website.
+
+Non-documentation comments are strongly encouraged. A general rule of thumb
+is that if you look at a section of code and think "Wow, I don't want to try
+and describe that", you need to comment it before you forget how it works.
+
+C style comments (/* */) and standard C++ comments (//) are both fine. Use
+of Perl/shell style comments (#) is discouraged.
+
+Including Code
+==============
+
+This one is simple: always use require.
+
+Note: include and require are statements, not functions.
+Parentheses should not surround the subject filename:
+
+	require 'example.php';
+
+PHP Code Tags
+=============
+
+Always use <?php ?> to delimit PHP code, not the <? ?> shorthand.
+
+Header Comment Blocks
+=====================
+
+All source code files shall contain a "page-level"
+docblock at the top of each file and a "class-level" docblock immediately
+above each class. Below are examples of such docblocks.
+
+	<?php
+	
+	/**
+	 * Short description for file
+	 *
+	 * Long description for file (if any)...
+	 * 
+	 * LICENSE: This source file is subject to version 3.0 of the PHP license
+	 * that is available through the world-wide-web at the following URI:
+	 * http://www.php.net/license/3_0.txt.  If you did not receive a copy of
+	 * the PHP License and are unable to obtain it through the web, please
+	 * send a note to license@php.net so we can mail you a copy immediately.
+	 * 
+	 * @category   CategoryName
+	 * @package    PackageName
+	 * @author     ExampleA
+	 * @author     ExampleB
+	 * @license    http://www.php.net/license/3_0.txt  PHP License 3.0
+	 * @link       http://three29.com/find/here
+	 * @see        NetOther, Net_Sample::Net_Sample()
+	 * @since      File available since Release 1.2.0
+	 * @deprecated File deprecated in Release 2.0.0
+	 */
+	
+	/*
+	 * Place includes, constant defines and $_GLOBAL settings here.
+	 * Make sure they have appropriate docblocks to avoid phpDocumentor
+	 * thinking they are documented by the page-level docblock.
+	 */
+	
+	/**
+	 * Short description for class
+	 * 
+	 * Long description for class (if any)...
+	 * 
+	 * @category   CategoryName
+	 * @package    PackageName
+	 * @author     ExampleA
+	 * @author     ExampleB
+	 * @link       http://three29.com/find/here
+	 * @see        NetOther, Net_Sample::Net_Sample()
+	 * @since      Class available since Release 1.2.0
+	 * @deprecated Class deprecated in Release 2.0.0
+	 */
+	class foo
+	{
+	}
+	
+	?>
+
+Naming Conventions
+==================
+
+Classes
+-------
+
+Classes should be given descriptive names. Avoid using abbreviations where
+possible. Class names should always begin with an uppercase letter. The class
+hierarchy is also reflected in the class name, each level of the hierarchy
+separated with a single underscore. Examples of good class names are:
+
+	Log
+	
+	Net_Finger
+	
+	HTML_Upload_Error
+
+Functions and Methods
+---------------------
+
+Functions and methods should be named using the "studly caps" style (also
+referred to as "bumpy case" or "camel caps"). Functions should in addition
+have the package name as a prefix, to avoid name collisions between
+packages. The initial letter of the name (after the prefix) is lowercase,
+and each letter that starts a new "word" is capitalized. Some examples:
+
+	connect()
+	
+	getData()
+	
+	buildSomeWidget()
+
+Constants
+---------
+
+Constants should always be all-uppercase, with underscores to separate
+words. Prefix constant names with the uppercased name of the class/package
+they are used in. For example, the constants used by the DB:: package all
+begin with DB_. Of course, when you're using class constants, no need
+for a prefix exists.
+
+Note: The true, false and null constants are excepted from the
+all-uppercase rule, and must always be lowercase.
+
+File Formats
+------------
+
+All scripts contributed must:
+
+	* Be stored as ASCII text
+	* Use ISO-8859-1 character encoding
+	* Be Unix formatted
+	  
+	  "Unix formatted" means two things:
+	  1 Lines must end only with a line feed (LF). Line feeds are
+	    represented as ordinal 10, octal 012 and hex 0A. Do not use
+	    carriage returns (CR) like Macintosh computers do or the carriage
+	    return/line feed combination (CRLF) like Windows computers do.
+	  2 There should be one line feed after the closing PHP tag (?>).
+	    This means that when the cursor is at the very end of the file, it
+	    should be one line below the closing PHP tag.
+
+Sample File (including Docblock Comment standards)
+==================================================
+
+Please take note of the vertical and horizontal spacing. They are part of
+the standard.
+
+	<?php
+	
+	/**
+	 * Short description for file
+	 * 
+	 * Long description for file (if any)...
+	 * 
+	 * LICENSE: This source file is subject to version 3.0 of the PHP license
+	 * that is available through the world-wide-web at the following URI:
+	 * http://www.php.net/license/3_0.txt.  If you did not receive a copy of
+	 * the PHP License and are unable to obtain it through the web, please
+	 * send a note to license@php.net so we can mail you a copy immediately.
+	 * 
+	 * @category   CategoryName
+	 * @package    PackageName
+	 * @author     ExampleA
+	 * @author     ExampleB
+	 * @license    http://three29.com/license  PHP License 3.0
+	 * @version    CVS: $Id:$
+	 * @link       http://three29.com/find/here
+	 * @see        NetOther, Net_Sample::Net_Sample()
+	 * @since      File available since Release 1.2.0
+	 * @deprecated File deprecated in Release 2.0.0
+	 */
+	
+	/**
+	 * This is a "Docblock Comment," also known as a "docblock."  The class'
+	 * docblock, below, contains a complete description of how to write these.
+	 */
+	require 'RPC_Util.php';
+	
+	/**
+	 * Methods return this if they succeed
+	 */
+	define( 'NET_SAMPLE_OK', 1 );
+	
+	/**
+	 * The number of objects created
+	 * 
+	 * @global int $GLOBALS['NET_SAMPLE_Count']
+	 */
+	$GLOBALS['NET_SAMPLE_Count'] = 0;
+	
+	/**
+	 * An example of how to write code
+	 * 
+	 * Docblock comments start with "/**" at the top.  Notice how the "/"
+	 * lines up with the normal indenting and the asterisks on subsequent rows
+	 * are in line with the first asterisk.  The last line of comment text
+	 * should be immediately followed on the next line by the closing asterisk
+	 * and slash and then the item you are commenting on should be on the next
+	 * line below that.  Don't add extra lines.  Please put a blank line
+	 * between paragraphs as well as between the end of the description and
+	 * the start of the @tags.  Wrap comments before 80 columns in order to
+	 * ease readability for a wide variety of users.
+	 * 
+	 * Docblocks can only be used for programming constructs which allow them
+	 * (classes, properties, methods, defines, includes, globals).  See the
+	 * phpDocumentor documentation for more information.
+	 * http://phpdoc.org/
+	 * 
+	 * The Javadoc Style Guide is an excellent resource for figuring out
+	 * how to say what needs to be said in docblock comments.  Much of what is
+	 * written here is a summary of what is found there, though there are some
+	 * cases where what's said here overrides what is said there.
+	 * http://java.sun.com/j2se/javadoc/
+	 * 
+	 * The first line of any docblock is the summary.  Make them one short
+	 * sentence, without a period at the end.  Summaries for classes, properties
+	 * and constants should omit the subject and simply state the object,
+	 * because they are describing things rather than actions or behaviors.
+	 * 
+	 * Below are the tags commonly used for classes. @category through @author
+	 * are required.  The remainder should only be used when necessary.
+	 * Please use them in the order they appear here.  phpDocumentor has
+	 * several other tags available, feel free to use them.
+	 * 
+	 * @category   CategoryName
+	 * @package    PackageName
+	 * @author     ExampleA
+	 * @author     ExampleB
+	 * @license    http://www.php.net/license/3_0.txt  PHP License 3.0
+	 * @version    Release: @package_version@
+	 * @link       http://three29.com/find/here
+	 * @see        NetOther, Net_Sample::Net_Sample()
+	 * @since      Class available since Release 1.2.0
+	 * @deprecated Class deprecated in Release 2.0.0
+	 */
+	class RPC_Net_Sample
+	{
+		
+		/**
+		 * The status of foo's universe
+		 * 
+		 * Potential values are 'good', 'fair', 'poor' and 'unknown'.
+		 * 
+		 * @var string
+		 */
+		public $foo = 'unknown';
+		
+		/**
+		 * The status of life
+		 * 
+		 * Everything is good for some
+		 * 
+		 * @var bool
+		 */
+		private $good = true;
+		
+		/**
+		 * Registers the status of foo's universe
+		 * 
+		 * Summaries for methods should use 3rd person declarative rather
+		 * than 2nd person imperative, begining with a verb phrase.
+		 * 
+		 * Summaries should add description beyond the method's name. The
+		 * best method names are "self-documenting", meaning they tell you
+		 * basically what the method does.  If the summary merely repeats
+		 * the method name in sentence form, it is not providing more
+		 * information.
+		 * 
+		 * Summary Examples:
+		 *   + Sets the label              (preferred)
+		 *   + Set the label               (avoid)
+		 *   + This method sets the label  (avoid)
+		 * 
+		 * Below are the tags commonly used for methods.  A @param tag is
+		 * required for each parameter the method has. The @throws tag is required
+		 * if the method uses exceptions. The remainder should only be used when
+		 * necessary.  Please use them in the order they appear here.
+		 * phpDocumentor has several other tags available, feel free to use
+		 * them.
+		 * 
+		 * The @param tag contains the data type, then the parameter's
+		 * name, followed by a description.  By convention, the first noun in
+		 * the description is the data type of the parameter.  Articles like
+		 * "a", "an", and  "the" can precede the noun.  The descriptions
+		 * should start with a phrase.  If further description is necessary,
+		 * follow with sentences.  Having two spaces between the name and the
+		 * description aids readability.
+		 * 
+		 * When writing a phrase, do not capitalize and do not end with a
+		 * period:
+		 *   + the string to be tested
+		 * 
+		 * When writing a phrase followed by a sentence, do not capitalize the
+		 * phrase, but end it with a period to distinguish it from the start
+		 * of the next sentence:
+		 *   + the string to be tested. Must use UTF-8 encoding.
+		 * 
+		 * Return tags should contain the data type then a description of
+		 * the data returned.  The data type can be any of PHP's data types
+		 * (int, float, bool, string, array, object, resource, mixed)
+		 * and should contain the type primarily returned.  For example, if
+		 * a method returns an object when things work correctly but false
+		 * when an error happens, say 'object' rather than 'mixed.'
+		 * 
+		 * Here's an example of how to format examples:
+		 * <code>
+		 * require 'Net/Sample.php';
+		 * 
+		 * $s = new Net_Sample();
+		 * if( Do::smth( $s ) )
+		 * {
+		 *     echo $s->getMessage() . "\n";
+		 * }
+		 * </code>
+		 * 
+		 * Here is an example for non-php example or sample:
+		 * <samp>
+		 * ls -al | grep php
+		 * </samp>
+		 * 
+		 * @param string $arg1  the string to quote
+		 * @param int    $arg2  an integer of how many problems happened.
+		 *                      Indent to the description's starting point
+		 *                      for long ones.
+		 * 
+		 * @return int the integer of the set mode used. FALSE if foo
+		 *             foo could not be set.
+		 * 
+		 * @see Net_Sample::$foo, Net_Other::someMethod()
+		 * @since Method available since Release 1.2.0
+		 * @deprecated Method deprecated in Release 2.0.0
+		 */
+		function setFoo( $arg1, $arg2 = 0 )
+		{
+			/*
+				This is a "Block Comment."  The format is the same as
+				Docblock Comments except there is only one asterisk at the top.
+				phpDocumentor doesn't parse these.
+			*/
+			if( $arg1 == 'good' ||
+			    $arg1 == 'fair' )
+			{
+				$this->foo = $arg1;
+				return 1;
+			}
+			elseif( $arg1 == 'poor' &&
+			        $arg2 > 1 )
+			{
+				$this->foo = 'poor';
+				return 2;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	    
+	}
+	
+	?>
