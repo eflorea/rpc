@@ -2,13 +2,15 @@
 
 namespace RPC\View\Filter;
 
+use RPC\View\Filter;
+
 /**
  * Chain of filters which allows for multiple filters to be added so they can be
  * ran sequentially
  * 
  * @package View
  */
-class Chain implements \RPC\View\Filter
+class Chains implements \RPC\View\Filter
 {
 	
 	/**

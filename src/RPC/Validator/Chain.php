@@ -4,7 +4,7 @@ namespace RPC\Validator;
 
 use RPC\Validator;
 
-class Chain extends Validator
+class Chain2 extends Validator
 {
 	
 	protected $chain = array();

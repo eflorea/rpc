@@ -9,13 +9,13 @@ use RPC\View\Cache;
 class Controller
 {
 	protected $template;
+	protected $methodCalled;
 
 	protected $vars = array();
 
 	public function display( $template = null )
 	{	
 		$this->template = $template;
-		$this->getView()->setController( $this );
 		$this->getView()->display( $template );
 	}
 
@@ -25,6 +25,7 @@ class Controller
 		if( ! \RPC\Registry::registered( 'view' ) )
 		{
 			$view = new \RPC\View( PATH_APP  . '/View', new \RPC\View\Cache( PATH_CACHE . '/view' ) );
+			$view->setController( $this );
 
 			\RPC\Registry::set( 'view', $view );
 		}

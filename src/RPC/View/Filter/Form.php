@@ -1,6 +1,8 @@
 <?php
 
+namespace RPC\View\Filter;
 
+use RPC\View\Filter\Chains;
 
 /**
  * Finds forms in the source and adds a line of code which will set the method
@@ -8,7 +10,7 @@
  * 
  * @package View
  */
-class RPC_View_Filter_Form extends RPC_View_Filter_Chain
+class Form extends \RPC\View\Filter\Chains
 {
 	
 	/**

@@ -5,7 +5,7 @@ namespace RPC;
 
 use Exception;
 
-use RPC\View\Filter\Chain;
+use RPC\View\Filter\Chains as Form_Chain;
 use RPC\View\Cache;
 use RPC\View\Form;
 
@@ -17,7 +17,7 @@ use RPC\Signal;
  * 
  * @package View
  */
-class View extends Chain
+class View extends Form_Chain
 {
 	protected $controller;
 	/**
@@ -320,6 +320,26 @@ class View extends Chain
 	 */
 	public function display( $template = null )
 	{
+
+		if( ! $template )
+		{
+			//get template automatic from controller
+			$class = str_replace( array( 'APP\\Controller\\', '' ), array( '', '/' ), get_class( $this->controller ) );
+
+			//check if folder exits
+			if( ! is_dir( $this->_view_tpldir . '/' . $class ) )
+			{
+				throw new Exception( "Template Folder doesn't exits: " . $this->_view_tpldir . '/' . $class );
+			}
+
+			$template = $class . '/' . $this->controller->methodCalled . '.php';
+
+			//check if template exists based on the method called;
+			if( ! is_file( $this->_view_tpldir . '/' . $class . '/' . $this->controller->methodCalled . '.php' ) )
+			{
+				throw new Exception( "Template doesn't exits: " . $this->_view_tpldir . '/' . $class . '/' . $this->controller->methodCalled . '.php' );
+			}
+		}
 
 		if( ! \RPC\Signal::emit( array( '\RPC\View', 'onBeforeRender' ), array( $this, $template ) ) )
 		{
