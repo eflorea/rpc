@@ -5,14 +5,11 @@ namespace RPC;
 
 use Exception;
 
-use \RPC\View\Filter\Chain;
-use \RPC\View\Cache;
-use \RPC\View\Form;
+use RPC\View\Filter\Chain;
+use RPC\View\Cache;
+use RPC\View\Form;
 
-use \RPC\Signal;
-
-use \RPC\HTTP\Request;
-use \RPC\HTTP\Response;
+use RPC\Signal;
 
 
 /**
@@ -22,7 +19,7 @@ use \RPC\HTTP\Response;
  */
 class View extends Chain
 {
-	
+	protected $controller;
 	/**
 	 * Assigned variables throughout the script
 	 * 
@@ -321,8 +318,9 @@ class View extends Chain
 	 * 
 	 * @param string $template Path to template
 	 */
-	public function display( $template )
+	public function display( $template = null )
 	{
+
 		if( ! \RPC\Signal::emit( array( '\RPC\View', 'onBeforeRender' ), array( $this, $template ) ) )
 		{
 			return '';
@@ -394,6 +392,11 @@ class View extends Chain
 	{
 		$this->current_template = $tpl;
 		return $this;
+	}
+
+	public function setController( $obj )
+	{
+		$this->controller = $obj;
 	}
 	
 }

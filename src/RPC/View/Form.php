@@ -1,6 +1,11 @@
 <?php
 
-class RPC_View_Form
+namespace RPC\View;
+
+use Exception;
+use RPC\Registry;
+
+class Form
 {
 	
 	protected $method   = null;
@@ -8,7 +13,7 @@ class RPC_View_Form
 	
 	public function __construct()
 	{
-		$this->request = RPC_HTTP_Request::getInstance();
+		$this->request = \RPC\HTTP\Request::getInstance();
 	}
 	
 	public function setMethod( $method )
@@ -33,7 +38,7 @@ class RPC_View_Form
 	{
 		if( $name == 'csrf_token' )
 		{
-			return RPC_Registry::get( 'csrf_token' );
+			return \RPC\Registry::get( 'csrf_token' );
 		}
 		return $this->escape( $this->isSubmitted() ? $this->getValue( $name ) : $value );
 	}
