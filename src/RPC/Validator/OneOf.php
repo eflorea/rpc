@@ -3,7 +3,7 @@
 namespace RPC\Validator;
 
 use RPC\Validator;
-use Exception;
+
 
 class OneOf extends Validator
 {
@@ -15,7 +15,7 @@ class OneOf extends Validator
 		if( ! is_array( $values ) ||
 		    ! is_object( $values ) )
 		{
-			throw new Exception( 'Illegal parameter' );
+			throw new \Exception( 'Illegal parameter' );
 		}
 		
 		$this->values = $values;

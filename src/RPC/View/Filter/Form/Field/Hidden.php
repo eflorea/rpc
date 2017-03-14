@@ -1,26 +1,30 @@
 <?php
 
+namespace RPC\View\Filter\Form\Field;
 
+use RPC\View\Filter\Form\Field;
+
+use RPC\Regex;
 
 /**
  * Transforms inputs like:
- * <code><input type="password" name="u[password]" id="password" value="<?= $user->password ?>" /></code>
+ * <code><input type="hidden" name="u[username]" id="username" value="<?= $user->username ?>" /></code>
  * 
  * into
  * 
- * <code><?php $form->text( 'u[password]', $user->pasword, 'id="password"' ); ?></code>
+ * <code><?php $form->hidden( 'u[username]', $user->username, 'id="username"' ); ?></code>
  * (considering that the form's method is post)
  * 
  * @package View
  */
-class RPC_View_Filter_Form_InputPassword extends RPC_View_Filter_Form_Element implements RPC_View_Filter
+class Hidden extends Field
 {
 	
 	public function filter( $source )
 	{
-		$regex = new RPC_Regex( '/<input.*?type="password".*?>/' );
+		$regex = new \RPC\Regex( '/<input.*?type="hidden".*?>/' );
 		$regex->match( $source, $inputs );
-		
+				
 		foreach( $inputs as $input )
 		{
 			$input = $input[0][0];
@@ -42,7 +46,7 @@ class RPC_View_Filter_Form_InputPassword extends RPC_View_Filter_Form_Element im
 				continue;
 			}
 			
-			$new_input = $this->setAttribute( $input, 'value', '<?php echo $form->text( ' . $name . ', ' . $value . ' ) ?>' );
+			$new_input = $this->setAttribute( $input, 'value', '<?php echo $form->hidden( ' . $name . ', ' . $value . ' ) ?>' );
 			
 			$source = str_replace( $input, $new_input, $source );
 		}

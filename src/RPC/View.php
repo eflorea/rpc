@@ -3,9 +3,8 @@
 namespace RPC;
 
 
-use Exception;
 
-use RPC\View\Filter\Chains as Form_Chain;
+
 use RPC\View\Cache;
 use RPC\View\Form;
 
@@ -17,7 +16,7 @@ use RPC\Signal;
  * 
  * @package View
  */
-class View extends Form_Chain
+class View
 {
 	protected $controller;
 	/**
@@ -40,6 +39,8 @@ class View extends Form_Chain
 	 * @var string
 	 */
 	protected $_view_tpldir = '';
+
+	protected $_view_filters = array();
 	
 	/**
 	 * Default filters
@@ -49,11 +50,11 @@ class View extends Form_Chain
 	protected $_view_defaultfilters = array
 	(
 		'\RPC\View\Filter\Form',
-		'\RPC\View\Filter\Echo',
-		'\RPC\View\Filter\Render',
-		'\RPC\View\Filter\Placeholder',
-		'\RPC\View\Filter\Datagrid',
-		'\RPC\View\Filter\Error'
+		'\RPC\View\Filter\Echoo',
+		// '\RPC\View\Filter\Render',
+		// '\RPC\View\Filter\Placeholder',
+		// '\RPC\View\Filter\Datagrid',
+		// '\RPC\View\Filter\Error'
 	);
 	
 	/**
@@ -92,16 +93,17 @@ class View extends Form_Chain
 	{
 		if( ! is_dir( $dir ) )
 		{
-			throw new Exception( 'The given path does not point to a directory' );
+			throw new \Exception( 'The given path does not point to a directory' );
 		}
 		
 		if( ! is_object( $cache ) )
 		{
-			throw new Exception( 'You must set a cache object' );
+			throw new \Exception( 'You must set a cache object' );
 		}
 		
 		$this->_view_tpldir = realpath( $dir );
 		$this->_view_cache  = $cache;
+
 		
 		$this->setRequest( \RPC\HTTP\Request::getInstance() );
 		$this->setResponse( \RPC\HTTP\Response::getInstance() );
@@ -199,7 +201,7 @@ class View extends Form_Chain
 		$name = strtolower( end( $name ) );
 		
 		$this->_view_registeredfilters[$name] = array( 'class_name' => $class_name, 'instance' => null );
-		
+	
 		return $this;
 	}
 	
@@ -243,6 +245,12 @@ class View extends Form_Chain
 	{
 		return $this->_view_cache;
 	}
+
+
+	public function setVars( $vars )
+	{
+		$this->_view_vars = $vars;
+	}
 	
 	/**
 	 * Assigns a variable which will be available in the templates
@@ -254,7 +262,7 @@ class View extends Form_Chain
 	{
 		if( strpos( $var, 'plugin_' ) === 0 )
 		{
-			throw new Exception( 'You are trying to assign a value on an attribute which is reserved to a filter' );
+			throw new \Exception( 'You are trying to assign a value on an attribute which is reserved to a filter' );
 		}
 		
 		$this->_view_vars[$var] = $value;
@@ -329,7 +337,7 @@ class View extends Form_Chain
 			//check if folder exits
 			if( ! is_dir( $this->_view_tpldir . '/' . $class ) )
 			{
-				throw new Exception( "Template Folder doesn't exits: " . $this->_view_tpldir . '/' . $class );
+				throw new \Exception( "Template Folder doesn't exits: " . $this->_view_tpldir . '/' . $class );
 			}
 
 			$template = $class . '/' . $this->controller->methodCalled . '.php';
@@ -337,7 +345,7 @@ class View extends Form_Chain
 			//check if template exists based on the method called;
 			if( ! is_file( $this->_view_tpldir . '/' . $class . '/' . $this->controller->methodCalled . '.php' ) )
 			{
-				throw new Exception( "Template doesn't exits: " . $this->_view_tpldir . '/' . $class . '/' . $this->controller->methodCalled . '.php' );
+				throw new \Exception( "Template doesn't exits: " . $this->_view_tpldir . '/' . $class . '/' . $this->controller->methodCalled . '.php' );
 			}
 		}
 
@@ -348,11 +356,10 @@ class View extends Form_Chain
 		
 		$this->setCurrentTemplate( $template );
 		
-		$form = new \RPC\View\Form();
 		$view = $this;
 		
 		extract( $this->_view_vars );
-		
+
 		/*
 			"require"-ing the php file so that the PHP code is ran within the
 			local context, which will make the variables (previously extracted)
@@ -361,11 +368,6 @@ class View extends Form_Chain
 		require $this->getFilteredFile( $template );
 		
 		\RPC\Signal::emit( array( '\RPC\View', 'onAfterRender' ), array( $this, $template ) );
-		
-		if( $this->_view_development )
-		{
-			$this->getCache()->removeCacheFiles();
-		}
 	}
 	
 	/**
@@ -379,10 +381,10 @@ class View extends Form_Chain
 		
 		if( ! file_exists( $file ) )
 		{
-			throw new Exception( 'File "' . $file . '" does not exist' );
+			throw new \Exception( 'File "' . $file . '" does not exist' );
 		}
 		
-		if( ! $this->getCache()->get( $file ) )
+		if( ! $this->getCache()->get( $file, $template ) )
 		{
 			$this->_view_filters = array();
 			
@@ -394,13 +396,13 @@ class View extends Form_Chain
 					$v['instance'] = new $class();
 				}
 				
-				parent::addFilter( $v['instance'] );
+				$this->addFilter( $v['instance'] );
 			}
-			
-			$this->getCache()->set( $file, $this->filter( file_get_contents( $file ) ) );
+
+			$this->getCache()->set( $file, $this->filter( file_get_contents( $file ) ), $template );
 		}
-		
-		return $this->getCache()->get( $file );
+
+		return $this->getCache()->get( $file, $template );
 	}
 	
 	public function getCurrentTemplate( )
@@ -417,6 +419,64 @@ class View extends Form_Chain
 	public function setController( $obj )
 	{
 		$this->controller = $obj;
+	}
+
+	/**
+	 * Adds a new filter to the queue
+	 * 
+	 * @param RPC_View_Filter $filter
+	 * 
+	 * @return self
+	 */
+	public function addFilter( \RPC\View\Filter $filter )
+	{
+		$this->_view_filters[] = $filter;
+		
+		return $this;
+	}
+	
+	/**
+	 * Removes a filter from the queue
+	 * 
+	 * @param RPC_View_Filter $filter
+	 * 
+	 * @return RPC_View
+	 */
+	public function removeFilter( \RPC\View\Filter $filter )
+	{
+		$key = array_search( $filter, $this->_rpc_filters );
+		if( $key !== false )
+		{
+			unset( $this->_rpc_filters[$key] );
+		}
+		return $this;
+	}
+	
+	/**
+	 * Returns an array of previously loaded filters
+	 * 
+	 * @return array
+	 */
+	public function getFilters()
+	{
+		return $this->_view_filters;
+	}
+	
+	/**
+	 * Filters the source code through all registered filters
+	 * 
+	 * @param string $source
+	 * 
+	 * @return string
+	 */
+	public function filter( $source )
+	{
+		foreach( $this->_view_filters as $filter )
+		{
+			$source = $filter->filter( $source );
+		}
+		
+		return $source;
 	}
 	
 }

@@ -89,7 +89,7 @@ class Db
 	{
 		if( empty( self::$connections ) )
 		{
-			throw new Exception( 'No connections loaded' );
+			throw new \Exception( 'No connections loaded' );
 		}
 		
 		/*
@@ -110,7 +110,7 @@ class Db
 		}
 		elseif( ! array_key_exists( $connection, self::$connections ) )
 		{
-			throw new Exception( 'Connection ' . $connection . ' is not loaded' );
+			throw new \Exception( 'Connection ' . $connection . ' is not loaded' );
 		}
 		
 		/*
@@ -154,16 +154,16 @@ class Db
 	{
 		if( ! is_array( $info ) )
 		{
-			throw new Exception( '$info should be an array or an array' );
+			throw new \Exception( '$info should be an array or an array' );
 		}
 		
 		if( empty( $name ) )
 		{
-			throw new Exception( 'The configuration array should have a database name set' );
+			throw new \Exception( 'The configuration array should have a database name set' );
 		}
 		elseif( empty( $info['database'] ) )
 		{
-			throw new Exception( 'The configuration array should have a database adapter set' );
+			throw new \Exception( 'The configuration array should have a database adapter set' );
 		}
 		
 		self::$connections[$name] = $info;
@@ -178,7 +178,7 @@ class Db
 	{
 		if( ! is_array( $connections ) )
 		{
-			throw new Exception( 'You must pass an array of connections' );
+			throw new \Exception( 'You must pass an array of connections' );
 		}
 		
 		foreach( $connections as $name => $info )
@@ -202,7 +202,7 @@ class Db
 		}
 		else
 		{
-			throw new Exception( 'Connection not loaded' );
+			throw new \Exception( 'Connection not loaded' );
 		}
 		
 		return $this;

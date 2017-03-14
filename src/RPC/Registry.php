@@ -2,7 +2,7 @@
 
 namespace RPC;
 
-use Exception;
+
 
 /**
  * Allows registering objects which can be accessed from anywhere in the
@@ -48,7 +48,7 @@ class Registry
 		if( array_key_exists( $name, self::$registry ) )
 		{
 			return null;
-			throw new Exception( 'An object with the same name has already been registered' );
+			throw new \Exception( 'An object with the same name has already been registered' );
 		}
 		
 		self::$registry[$name] = $obj;
@@ -68,7 +68,7 @@ class Registry
 		if( ! self::registered( $name ) )
 		{
 			return null;
-			throw new Exception( 'There is no registered object with the name: "' . $name . '"' );
+			throw new \Exception( 'There is no registered object with the name: "' . $name . '"' );
 		}
 		
 		return self::$registry[$name];

@@ -2,7 +2,7 @@
 
 namespace RPC;
 
-use Exception;
+
 
 use RPC\HTTP\Request;
 use RPC\HTTP\Response;
@@ -131,12 +131,12 @@ class Router
 		$command = new $command;
 		if( ! $command instanceof \RPC\Controller )
 		{
-			throw new Exception( 'Class "' . ( is_object( $command ) ? get_class( $command ) : $command ) . '" has to inherit from RPC_Command' );
+			throw new \Exception( 'Class "' . ( is_object( $command ) ? get_class( $command ) : $command ) . '" has to inherit from RPC_Command' );
 		}
 		
 		if( ! in_array( $_SERVER['REQUEST_METHOD'], array( 'GET', 'POST', 'PUT' ) ) )
 		{
-			throw new Exception( 'Request Method is not valid: ' . $_SERVER['REQUEST_METHOD'] );
+			throw new \Exception( 'Request Method is not valid: ' . $_SERVER['REQUEST_METHOD'] );
 		}
 
 		$request = $_SERVER['REQUEST_METHOD'];
@@ -146,7 +146,7 @@ class Router
 		
 		if( ! is_callable( array( $command, $methodname ), false ) )
 		{
-			throw new Exception( 'Class "' . get_class( $command ) . '" was found but method "' . $methodname . '" could not be executed' );
+			throw new \Exception( 'Class "' . get_class( $command ) . '" was found but method "' . $methodname . '" could not be executed' );
 		}
 		
 		/*

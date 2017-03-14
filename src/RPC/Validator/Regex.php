@@ -30,7 +30,7 @@ class Regex extends Validator
 	{
 		if( empty( $pattern ) )
 		{
-			throw new Exception( 'You must supply a valid pattern' );
+			throw new \Exception( 'You must supply a valid pattern' );
 		}
 		
 		$this->pattern = $pattern;

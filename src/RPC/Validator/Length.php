@@ -3,7 +3,7 @@
 namespace RPC\Validator;
 
 use RPC\Validator;
-use Exception;
+
 
 class Length extends Validator
 {
@@ -33,7 +33,7 @@ class Length extends Validator
 		if( $this->min == 0 &&
 		    $this->max == 0 )
 		{
-			throw new Exception( 'Illegal arguments' );
+			throw new \Exception( 'Illegal arguments' );
 		}
 		
 		$length = strlen( $value );

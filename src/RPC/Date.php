@@ -60,7 +60,7 @@ class Date
 		}
 		else
 		{
-			throw new Exception( 'The function expects two or four parameters' );
+			throw new \Exception( 'The function expects two or four parameters' );
 		}
 	}
 	

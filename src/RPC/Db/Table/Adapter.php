@@ -380,7 +380,7 @@ abstract class Adapter implements Countable
 		}
 		else
 		{
-			throw new Exception( 'Method "' . $method . '" is not implemented' );
+			throw new \Exception( 'Method "' . $method . '" is not implemented' );
 		}
 	}
 	
@@ -443,7 +443,7 @@ abstract class Adapter implements Countable
 		}
 		else
 		{
-			throw new Exception( 'If given, data must be an array' );
+			throw new \Exception( 'If given, data must be an array' );
 		}
 		
 		return new $this->rowclass( $this, $tmp );
@@ -503,7 +503,7 @@ abstract class Adapter implements Countable
 		
 		if( empty( $pk ) )
 		{
-			throw new Exception( 'The array must contain the primary key' );
+			throw new \Exception( 'The array must contain the primary key' );
 		}
 		
 		if( $row = $this->getIdentityMap()->get( $pk ) )

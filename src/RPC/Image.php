@@ -2,7 +2,7 @@
 
 namespace RPC;
 
-use Exception;
+
 
 /**
  * Very simple image class which allows for resizing and converting
@@ -60,13 +60,13 @@ class Image
 	{
 		if( ! is_readable( $path ) )
 		{
-			throw new Exception( 'File "' . $path . '" is not readable' );
+			throw new \Exception( 'File "' . $path . '" is not readable' );
 		}
 		
 		$res = imagecreatefromstring( file_get_contents( $path ) );
 		if( ! $res )
 		{
-			throw new Exception( 'The given file is not a valid image' );
+			throw new \Exception( 'The given file is not a valid image' );
 		}
 		
 		list( $width, $height ) = getimagesize( $path );
@@ -99,7 +99,7 @@ class Image
 				imagegif( $this->getResource(), $path );
 				break;
 			default:
-				throw new Exception( 'Unknown image format: ' . $ext );
+				throw new \Exception( 'Unknown image format: ' . $ext );
 		}
 		
 		return $this;
@@ -128,7 +128,7 @@ class Image
 				imagegif( $this->getResource(), null );
 				break;
 			default:
-				throw new Exception( 'Unknown image format:' . $ext );
+				throw new \Exception( 'Unknown image format:' . $ext );
 		}
 		
 		return $this;
@@ -233,7 +233,7 @@ class Image
 		if( ! $mwidth ||
 		    ! $mheight )
 		{
-			throw new Exception( 'Invalid image passed as watermark' );
+			throw new \Exception( 'Invalid image passed as watermark' );
 		}
 		
 		$ext = $this->getExtension( $img );

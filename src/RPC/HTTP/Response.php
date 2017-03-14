@@ -2,7 +2,7 @@
 
 namespace RPC\HTTP;
 
-use Exception;
+
 
 /**
  * Represents the response sent back to the browser
@@ -106,12 +106,12 @@ class Response
 	{
 		if( headers_sent( $file, $line ) )
 		{
-			throw new Exception( 'Cookie cannot be set, headers have already been sent (file ' . $file . ', line ' . $line . ')' );
+			throw new \Exception( 'Cookie cannot be set, headers have already been sent (file ' . $file . ', line ' . $line . ')' );
 		}
 		
 		if( ! $cookie->getName() )
 		{
-			throw new Exception( 'Each cookie should have a name' );
+			throw new \Exception( 'Each cookie should have a name' );
 		}
 		
 		return setcookie( $cookie->getName(),
@@ -135,7 +135,7 @@ class Response
 	{
 		if( headers_sent() )
 		{
-			throw new Exception( 'Cookie cannot be unset, headers have already been sent (file ' . $file . ', line ' . $line . ')' );
+			throw new \Exception( 'Cookie cannot be unset, headers have already been sent (file ' . $file . ', line ' . $line . ')' );
 		}
 		
 		// set the expiration date to one hour ago

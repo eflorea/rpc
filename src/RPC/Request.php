@@ -3,7 +3,7 @@
 namespace RPC;
 
 
-use Exception;
+
 use RPC\Cookie;
 
 /**
@@ -490,7 +490,7 @@ class Request
 		if( $this->getMethod() == $method &&
 			@$this->{$method}['csrf_token'] !== RPC_Registry::get( 'csrf_token' ) )
 		{
-			throw new Exception( 'Token was not found. Please go back and refresh your page.' );
+			throw new \Exception( 'Token was not found. Please go back and refresh your page.' );
 		}
 
 		return true;

@@ -2,7 +2,7 @@
 
 namespace RPC;
 
-use Exception;
+
 
 /**
  * Session class which provides a few convenience methods. It is
@@ -84,7 +84,7 @@ class Session
 	 */
 	public function __clone()
 	{
-		throw new Exception( 'Singletons can\'t be cloned' );
+		throw new \Exception( 'Singletons can\'t be cloned' );
 	}
 	
 	/**

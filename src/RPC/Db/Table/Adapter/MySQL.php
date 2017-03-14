@@ -3,7 +3,7 @@
 namespace RPC\Db\Table\Adapter;
 
 use RPC\Db\Table\Adapter;
-use Exception;
+
 
 /**
  * MySQL driver implementation as a base for all model classes, mapping a table
@@ -65,7 +65,7 @@ abstract class MySQL extends Adapter
 		
 		if( ! $realfield )
 		{
-			throw new Exception( 'Field `' . $field . '` does not exist' );
+			throw new \Exception( 'Field `' . $field . '` does not exist' );
 		}
 		
 		$sql = 'select * from `' . $this->getName() . '` where '
@@ -84,7 +84,7 @@ abstract class MySQL extends Adapter
 		
 		if( ! $field )
 		{
-			throw new Exception( 'Field `' . $field . '` does not exist' );
+			throw new \Exception( 'Field `' . $field . '` does not exist' );
 		}
 		
 		$sql = 'select * from `' . $this->getName() . '` where `'
@@ -132,7 +132,7 @@ abstract class MySQL extends Adapter
 		
 		if( ! $field )
 		{
-			throw new Exception( 'Field `' . $field . '` does not exist' );
+			throw new \Exception( 'Field `' . $field . '` does not exist' );
 		}
 		
 		$sql = 'select * from `' . $this->getName() . '` where `'
@@ -382,7 +382,7 @@ abstract class MySQL extends Adapter
 	{
 		if( ! in_array( $column, $this->getFields() ) )
 		{
-			throw new Exception( 'Column "' . $column . '" does not exist in table ' . $this->getName() );
+			throw new \Exception( 'Column "' . $column . '" does not exist in table ' . $this->getName() );
 		}
 		
 		$res = $this->getDb()->prepare( 'select count(*) as nr from `' . $this->getName() . '` where `' . $column . '`=? limit 1' )->execute( array( $value ) );
@@ -413,7 +413,7 @@ abstract class MySQL extends Adapter
 	 */
 	public function lock()
 	{
-		throw new Exception( 'Not implemented' );
+		throw new \Exception( 'Not implemented' );
 	}
 	
 	/**
@@ -421,7 +421,7 @@ abstract class MySQL extends Adapter
 	 */
 	public function unlock()
 	{
-		throw new Exception( 'Not implemented' );
+		throw new \Exception( 'Not implemented' );
 	}
 
 

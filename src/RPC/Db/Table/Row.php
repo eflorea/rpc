@@ -215,7 +215,7 @@ class Row implements ArrayAccess
 		 */
 		if( $index == $this->getTable()->getPkField() )
 		{
-			throw new Exception( 'The primary key can only be changed using the setPk method' );
+			throw new \Exception( 'The primary key can only be changed using the setPk method' );
 		}
 		
 		/**
@@ -240,7 +240,7 @@ class Row implements ArrayAccess
 	 */
 	public function offsetUnset( $index )
 	{
-		throw new Exception( 'You cannot remove a field from the row' );
+		throw new \Exception( 'You cannot remove a field from the row' );
 	}
 	
 	/**
@@ -292,7 +292,7 @@ class Row implements ArrayAccess
 		
 		if( empty( $pk ) )
 		{
-			throw new Exception( 'Primary key cannot be empty' );
+			throw new \Exception( 'Primary key cannot be empty' );
 		}
 		
 		$this->row[$this->getTable()->getPkField()] = $pk;

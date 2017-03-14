@@ -3,7 +3,7 @@
 namespace RPC\Validator;
 
 use RPC\Validator;
-use Exception;
+
 
 class Between extends Validator
 {
@@ -17,7 +17,7 @@ class Between extends Validator
 		if( is_null( $min ) ||
 		    is_null( $max ) )
 		{
-			throw new Exception( 'Invalid arguments' );
+			throw new \Exception( 'Invalid arguments' );
 		}
 		
 		$this->min = $min;

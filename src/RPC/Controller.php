@@ -27,6 +27,8 @@ class Controller
 			$view = new \RPC\View( PATH_APP  . '/View', new \RPC\View\Cache( PATH_CACHE . '/view' ) );
 			$view->setController( $this );
 
+			$view->setVars( $this->vars );
+
 			\RPC\Registry::set( 'view', $view );
 		}
 		
@@ -44,7 +46,7 @@ class Controller
 	{
 		if( strpos( $var, 'template' ) === 0 )
 		{
-			throw new Exception( 'You are trying to assign a value on an attribute which is reserved to a template name' );
+			throw new \Exception( 'You are trying to assign a value on an attribute which is reserved to a template name' );
 		}
 		
 		$this->vars[$var] = $value;

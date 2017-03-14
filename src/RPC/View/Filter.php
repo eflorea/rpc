@@ -11,7 +11,7 @@ namespace RPC\View;
  * 
  * @package View
  */
-interface Filter
+class Filter
 {
 	
 	/**
@@ -19,7 +19,9 @@ interface Filter
 	 * 
 	 * @param string $source
 	 */
-	public function filter( $source );
+	public function filter( $source ) {
+		return $source;
+	}
 	
 }
 

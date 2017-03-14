@@ -1,5 +1,10 @@
 <?php
 
+namespace RPC\View\Filter\Form\Field;
+
+use RPC\View\Filter\Form\Field;
+
+use RPC\Regex;
 
 
 /**
@@ -13,11 +18,11 @@
  * 
  * @package View
  */
-class RPC_View_Filter_Form_InputRadio extends RPC_View_Filter_Form_Element implements RPC_View_Filter
+class Checkbox extends Field
 {
 	
 	/**
-	 * Adds persistence code to all radio inputs inside the given form
+	 * Adds persistence code to all checkbox inputs inside the given form
 	 * 
 	 * @param string $source
 	 * 
@@ -25,7 +30,7 @@ class RPC_View_Filter_Form_InputRadio extends RPC_View_Filter_Form_Element imple
 	 */
 	public function filter( $source )
 	{
-		$regex = new RPC_Regex( '/<input.*?type="radio".*?>/' );
+		$regex = new \RPC\Regex( '/<input.*?type="checkbox".*?>/' );
 		$regex->match( $source, $inputs );
 		
 		foreach( $inputs as $input )
@@ -37,7 +42,7 @@ class RPC_View_Filter_Form_InputRadio extends RPC_View_Filter_Form_Element imple
 			$checked = $this->getAttribute( $input, 'checked' );
 			
 			$persist = $this->getAttribute( $input, 'persist' );
-			
+
 			if( $persist == "'no'" )
 			{
 				$new_input = $this->removeAttribute( $input, 'persist' );
@@ -45,7 +50,7 @@ class RPC_View_Filter_Form_InputRadio extends RPC_View_Filter_Form_Element imple
 				continue;
 			}
 			
-			$new_input = $this->setAttribute( $input, 'checked', '<?php echo $form->radio( ' . $name . ', ' . $value . ', ' . $checked . ' ) ?>' );
+			$new_input = $this->setAttribute( $input, 'checked', '<?php echo $form->checkbox( ' . $name . ', ' . $value . ', ' . $checked . ' ) ?>' );
 			
 			$source = str_replace( $input, $new_input, $source );
 		}

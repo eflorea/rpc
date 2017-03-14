@@ -4,7 +4,7 @@ namespace RPC\View\Filter\Form;
 
 use RPC\Regex;
 
-class Element
+class Field
 {
 	
 	/**
@@ -40,7 +40,7 @@ class Element
 		 */
 		if( strpos( $html, $name . '="<' ) !== false )
 		{
-			$regex = new RPC\Regex( '/' . $name . '="<\?=(.*?)(?<=\?>")/' );
+			$regex = new \RPC\Regex( '/' . $name . '="<\?=(.*?)(?<=\?>")/' );
 			if( ! $regex->match( $html, $matches ) )
 			{
 				return "''";
@@ -49,7 +49,7 @@ class Element
 			return trim( substr( $matches[0][1][0], 0, -3 ) );
 		}
 		
-		$regex = new RPC\Regex( '/' . $name . '="([^"]+)"/' );
+		$regex = new \RPC\Regex( '/' . $name . '="([^"]+)"/' );
 		if( ! $regex->match( $html, $matches ) )
 		{
 			return "''";
@@ -70,11 +70,11 @@ class Element
 	{
 		if( strpos( $html, $name . '="<' ) !== false )
 		{
-			$regex = new RPC\Regex( '/' . $name . '="<\?=.*?(?<=\?>")/' );
+			$regex = new \RPC\Regex( '/' . $name . '="<\?=.*?(?<=\?>")/' );
 		}
 		else
 		{
-			$regex = new RPC\Regex( '/' . $name . '="[^"]+"/' );
+			$regex = new \RPC\Regex( '/' . $name . '="[^"]+"/' );
 		}
 		
 		return $regex->replace( $html, '' );
@@ -104,7 +104,7 @@ class Element
 		{
 			$html = $this->removeAttribute( $html, 'checked' );
 			
-			$regex = new RPC\Regex( '#/>$#' );
+			$regex = new \RPC\Regex( '#/>$#' );
 			return $regex->replace( $html, ' ' . $value . ' />' );
 		}
 		
@@ -113,12 +113,12 @@ class Element
 		 */
 		if( strpos( $html, $name . '="<' ) !== false )
 		{
-			$regex = new RPC\Regex( '/' . $name . '="<\?=.*?(?<=\?>")/' );
+			$regex = new \RPC\Regex( '/' . $name . '="<\?=.*?(?<=\?>")/' );
 			return $regex->replace( $html, $name . '="' . $value . '"' );
 		}
 		elseif( strpos( $html, $name . '="' ) !== false )
 		{
-			$regex = new RPC\Regex( '/' . $name . '="[^"]*"/' );
+			$regex = new \RPC\Regex( '/' . $name . '="[^"]*"/' );
 			return $regex->replace( $html, $name . '="' . $value . '"' );
 		}
 		
@@ -132,14 +132,14 @@ class Element
 		 */
 		if( substr( $html, -2 ) == '/>' )
 		{
-			$regex = new RPC\Regex( '#/>$#' );
+			$regex = new \RPC\Regex( '#/>$#' );
 			return $regex->replace( $html, ' ' . $name . '="' . $value . '" />' );
 		}
 		
 		/*
 		 * Otherwise the attribute is added just after the attribute name
 		 */
-		$regex = new RPC\Regex( '#<(select|textarea)#' );
+		$regex = new \RPC\Regex( '#<(select|textarea)#' );
 		return $regex->replace( $html, '<$1 ' . $name . '="' . $value . '" ' );
 	}
 	
@@ -153,7 +153,7 @@ class Element
 	 */
 	public function setContent( $html, $content )
 	{
-		$regex = new RPC\Regex( '#>(</(textarea|select)>)$#' );
+		$regex = new \RPC\Regex( '#>(</(textarea|select)>)$#' );
 		return $regex->replace( $html, '>' . $content . '$1' );
 	}
 	

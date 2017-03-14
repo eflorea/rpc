@@ -1,24 +1,27 @@
 <?php
 
+namespace RPC\View\Filter\Form\Field;
 
+use RPC\View\Filter\Form\Field;
+
+use RPC\Regex;
 
 /**
  * Transforms inputs like:
- * <code><input type="text" name="u[username]" id="username" value="<?= $user->username ?>" /></code>
+ * <code><input type="password" name="u[password]" id="password" value="<?= $user->password ?>" /></code>
  * 
  * into
  * 
- * <code><?php $form->text( 'u[username]', $user->username, 'id="username"' ); ?></code>
- * (considering that the form's method is post)
+ * <code><?php $form->text( 'u[password]', $user->pasword, 'id="password"' ); ?></code>
  * 
  * @package View
  */
-class RPC_View_Filter_Form_InputText extends RPC_View_Filter_Form_Element implements RPC_View_Filter
+class Pass extends Field
 {
 	
 	public function filter( $source )
 	{
-		$regex = new RPC_Regex( '/<input.*?type="text".*?>/' );
+		$regex = new \RPC\Regex( '/<input.*?type="password".*?>/' );
 		$regex->match( $source, $inputs );
 		
 		foreach( $inputs as $input )

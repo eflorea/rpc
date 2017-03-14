@@ -1,12 +1,10 @@
 <?php
 
-namespace RPC\View\Filter\Form;
+namespace RPC\View\Filter\Form\Field;
 
-use RPC\View\Filter;
-use RPC\View\Filter\Form\Element;
+use RPC\View\Filter\Form\Field;
 
 use RPC\Regex;
-
 
 /**
  * Transforms inputs like:
@@ -19,11 +17,11 @@ use RPC\Regex;
  * 
  * @package View
  */
-class InputCheckbox extends Element implements Filter
+class Radio extends Field
 {
 	
 	/**
-	 * Adds persistence code to all checkbox inputs inside the given form
+	 * Adds persistence code to all radio inputs inside the given form
 	 * 
 	 * @param string $source
 	 * 
@@ -31,7 +29,7 @@ class InputCheckbox extends Element implements Filter
 	 */
 	public function filter( $source )
 	{
-		$regex = new RPC\Regex( '/<input.*?type="checkbox".*?>/' );
+		$regex = new \RPC\Regex( '/<input.*?type="radio".*?>/' );
 		$regex->match( $source, $inputs );
 		
 		foreach( $inputs as $input )
@@ -43,7 +41,7 @@ class InputCheckbox extends Element implements Filter
 			$checked = $this->getAttribute( $input, 'checked' );
 			
 			$persist = $this->getAttribute( $input, 'persist' );
-
+			
 			if( $persist == "'no'" )
 			{
 				$new_input = $this->removeAttribute( $input, 'persist' );
@@ -51,7 +49,7 @@ class InputCheckbox extends Element implements Filter
 				continue;
 			}
 			
-			$new_input = $this->setAttribute( $input, 'checked', '<?php echo $form->checkbox( ' . $name . ', ' . $value . ', ' . $checked . ' ) ?>' );
+			$new_input = $this->setAttribute( $input, 'checked', '<?php echo $form->radio( ' . $name . ', ' . $value . ', ' . $checked . ' ) ?>' );
 			
 			$source = str_replace( $input, $new_input, $source );
 		}

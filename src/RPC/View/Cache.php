@@ -2,8 +2,6 @@
 
 namespace RPC\View;
 
-use Exception;
-
 /**
  * Implements a basic caching mechanism for views
  * 
@@ -42,12 +40,12 @@ class Cache
 		
 		if( ! is_dir( $path ) )
 		{
-			throw new Exception( $path . ' is not a directory' );
+			throw new \Exception( $path . ' is not a directory' );
 		}
 		
 		if( ! is_writable( $path ) )
 		{
-			throw new Exception( $path . ' must be writeable' );
+			throw new \Exception( $path . ' must be writeable' );
 		}
 		
 		$this->directory = $path;
@@ -72,9 +70,10 @@ class Cache
 	 * 
 	 * @return string
 	 */
-	public function get( $file )
+	public function get( $file, $template_name )
 	{
-		$path = $this->getPathForFile( $file );
+		$template_name = preg_replace( '/[^a-zA-Z]/', '_', $template_name );
+		$path = $this->getPathForFile( $file, $template_name );
 
 		if( ! file_exists( $path ) )
 		{
@@ -112,9 +111,9 @@ class Cache
 	 * 
 	 * @return string
 	 */
-	protected function getPathForFile( $file )
+	protected function getPathForFile( $file, $nice_name )
 	{
-		return $this->getDirectory() . DIRECTORY_SEPARATOR . 'rpc_view_cache_' . md5( $file ) . '.php';
+		return $this->getDirectory() . DIRECTORY_SEPARATOR . 'view_' . $nice_name .  '_' . md5( $file ) . '.php';
 	}
 	
 	/**
@@ -125,11 +124,13 @@ class Cache
 	 * 
 	 * @return RPC_View_Cache
 	 */
-	public function set( $file, $content )
+	public function set( $file, $content, $template_name )
 	{
-		if( ! file_put_contents( $this->getPathForFile( $file ), $content ) )
+		$template_name = preg_replace( '/[^a-zA-Z]/', '_', $template_name );
+
+		if( ! file_put_contents( $this->getPathForFile( $file, $template_name ), $content ) )
 		{
-			throw new Exception( 'Cannot write cached version of template "' . $file  . '" to "' . $this->getPathForFile( $file ) . '"' );
+			throw new \Exception( 'Cannot write cached version of template "' . $file  . '" to "' . $this->getPathForFile( $file, $template_name ) . '"' );
 		}
 
 		return $this;

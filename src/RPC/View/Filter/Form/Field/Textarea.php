@@ -1,6 +1,10 @@
 <?php
 
+namespace RPC\View\Filter\Form\Field;
 
+use RPC\View\Filter\Form\Field;
+
+use RPC\Regex;
 
 /**
  * Transforms textareas like:
@@ -12,7 +16,7 @@
  * 
  * @package View
  */
-class RPC_View_Filter_Form_Textarea extends RPC_View_Filter_Form_Element implements RPC_View_Filter
+class Textarea extends Field
 {
 	
 	/**
@@ -24,7 +28,7 @@ class RPC_View_Filter_Form_Textarea extends RPC_View_Filter_Form_Element impleme
 	 */
 	public function filter( $source )
 	{
-		$regex = new RPC_Regex( '/<textarea.*?>.*?<\/textarea>/ms' );
+		$regex = new \RPC\Regex( '/<textarea.*?>.*?<\/textarea>/ms' );
 		$regex->match( $source, $matches );
 		
 		foreach( $matches as $textarea )

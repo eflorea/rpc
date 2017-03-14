@@ -1,13 +1,17 @@
 <?php
 
+namespace RPC\View\Filter\Form\Field;
 
+use RPC\View\Filter\Form\Field;
+
+use RPC\Regex;
 
 /**
  * Makes selects persistent
  * 
  * @package View
  */
-class RPC_View_Filter_Form_Select extends RPC_View_Filter_Form_Element implements RPC_View_Filter
+class Select extends Field
 {
 	
 	/**
@@ -19,7 +23,7 @@ class RPC_View_Filter_Form_Select extends RPC_View_Filter_Form_Element implement
 	 */
 	public function filter( $source )
 	{
-		$regex = new RPC_Regex( '/<select.*?><\/select>/' );
+		$regex = new \RPC\Regex( '/<select.*?><\/select>/' );
 		$regex->match( $source, $matches );
 
 		foreach( $matches as $select )
