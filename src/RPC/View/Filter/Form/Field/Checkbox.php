@@ -14,7 +14,6 @@ use RPC\Regex;
  * into
  * 
  * <code><input type="text" name="u[username]" id="username" value="<?php if( isset( $this->getRequest()->post['u']['username'] ) ): echo $this->getRequest()->post['u']['username']; else: ?><?= $user->username ?><?php endif; ?>" /></code>
- * (considering that the form's method is post)
  * 
  * @package View
  */
@@ -30,7 +29,7 @@ class Checkbox extends Field
 	 */
 	public function filter( $source )
 	{
-		$regex = new \RPC\Regex( '/<input.*?type="checkbox".*?>/' );
+		$regex = new \RPC\Regex( '/<input.*?type="checkbox".*?(?<!\?)>>/' );
 		$regex->match( $source, $inputs );
 		
 		foreach( $inputs as $input )
@@ -50,7 +49,7 @@ class Checkbox extends Field
 				continue;
 			}
 			
-			$new_input = $this->setAttribute( $input, 'checked', '<?php echo $form->checkbox( ' . $name . ', ' . $value . ', ' . $checked . ' ) ?>' );
+			$new_input = $this->setAttribute( $input, 'checked', '<?php echo $form->checkbox( ' . $name . ', ' . $value . ', ' . $checked . ' ); ?>' );
 			
 			$source = str_replace( $input, $new_input, $source );
 		}

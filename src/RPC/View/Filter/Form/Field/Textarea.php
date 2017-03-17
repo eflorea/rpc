@@ -28,7 +28,7 @@ class Textarea extends Field
 	 */
 	public function filter( $source )
 	{
-		$regex = new \RPC\Regex( '/<textarea.*?>.*?<\/textarea>/ms' );
+		$regex = new \RPC\Regex( '/<textarea.*?(?<!\?)>.*?(?<!\?)><\/textarea>/ms' );
 		$regex->match( $source, $matches );
 		
 		foreach( $matches as $textarea )
@@ -44,7 +44,7 @@ class Textarea extends Field
 			$value = $this->getAttribute( $textarea, 'value' );
 
 			$new_textarea = $this->removeAttribute( $textarea, 'value' );
-			$new_textarea = $this->setContent( $new_textarea, '<?php echo $form->textarea( ' . $name . ', ' . $value . ' ) ?>' );
+			$new_textarea = $this->setContent( $new_textarea, '<?php echo $form->textarea( ' . $name . ', ' . $value . ' ); ?>' );
 			
 			$source = str_replace( $textarea, $new_textarea, $source );
 		}

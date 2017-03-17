@@ -51,8 +51,8 @@ class View
 	(
 		'\RPC\View\Filter\Form',
 		'\RPC\View\Filter\Echoo',
-		// '\RPC\View\Filter\Render',
-		// '\RPC\View\Filter\Placeholder',
+		'\RPC\View\Filter\Render',
+		'\RPC\View\Filter\Placeholder',
 		// '\RPC\View\Filter\Datagrid',
 		// '\RPC\View\Filter\Error'
 	);

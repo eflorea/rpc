@@ -20,14 +20,14 @@ class Text extends Field
 {
 	
 	public function filter( $source )
-	{
-		$regex = new \RPC\Regex( '/<input.*?type="text".*?>/' );
+	{		
+		$regex = new \RPC\Regex( '/<input.*?type="text".*?(?<!\?)>/' );
 		$regex->match( $source, $inputs );
 		
 		foreach( $inputs as $input )
 		{
 			$input = $input[0][0];
-			
+		
 			if( ! $this->hasAttribute( $input, 'name' ) )
 			{
 				continue;
@@ -35,7 +35,7 @@ class Text extends Field
 			
 			$name  = $this->getAttribute( $input, 'name' );
 			$value = $this->getAttribute( $input, 'value' );
-			
+
 			$persist = $this->getAttribute( $input, 'persist' );
 			
 			if( $persist == "'no'" )
@@ -45,9 +45,9 @@ class Text extends Field
 				continue;
 			}
 			
-			$new_input = $this->setAttribute( $input, 'value', '<?php echo $form->text( ' . $name . ', ' . $value . ' ) ?>' );
+			$new_input = $this->setAttribute( $input, 'value', '<?php echo $form->text( ' . $name . ', ' . $value . ' ); ?>' );
 			
-			$source = str_replace( $input, $new_input, $source );
+			$source = str_replace( $input, $new_input, $source );	
 		}
 		
 		return $source;

@@ -1,6 +1,8 @@
 <?php
 
+namespace RPC\View\Filter;
 
+use RPC\View\Filter;
 
 /**
  * Transforms <code><render></render></code> tags into code which will render
@@ -8,7 +10,7 @@
  * 
  * @package View
  */
-class RPC_View_Filter_Render implements RPC_View_Filter
+class Render implements Filter
 {
 	
 	/**

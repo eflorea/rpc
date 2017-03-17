@@ -1,11 +1,15 @@
 <?php
 
-class RPC_View_Filter_Placeholder implements RPC_View_Filter
+namespace RPC\View\Filter;
+
+use RPC\View\Filter;
+
+class Placeholder implements Filter
 {
 	
 	public function filter( $source )
 	{
-		$regex = new RPC_Regex( '/<placeholder id="([a-zA-Z0-9_\-]+)">/' );
+		$regex = new RPC_Regex( '/<placeholder id="([a-zA-Z0-9_\-]+)"><\/placeholder>/' );
 		$source = $regex->replace( $source, '<?php if( function_exists( \'_rpc_view_placeholder_${1}\' ) ) { _rpc_view_placeholder_${1}( $this, $_rpc_view_old_template ); } ?>' );
 			
 		$regex = new RPC_Regex( '/<filler for="([a-zA-Z0-9_\-]+)">/' );

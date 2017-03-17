@@ -23,7 +23,7 @@ class Select extends Field
 	 */
 	public function filter( $source )
 	{
-		$regex = new \RPC\Regex( '/<select.*?><\/select>/' );
+		$regex = new \RPC\Regex( '/<select.*?(?<!\?)><\/select>/' );
 		$regex->match( $source, $matches );
 
 		foreach( $matches as $select )
@@ -42,7 +42,7 @@ class Select extends Field
 			$new_select = $this->removeAttribute( $select, 'source' );
 			$new_select = $this->removeAttribute( $new_select, 'selected' );
 			
-			$new_select = $this->setContent( $new_select, '<?php echo $form->select( ' . $name . ', ' . $src . ', ' . $selected . ' ) ?>' );
+			$new_select = $this->setContent( $new_select, '<?php echo $form->select( ' . $name . ', ' . $src . ', ' . $selected . ' ); ?>' );
 			
 			$source = str_replace( $select, $new_select, $source );
 		}

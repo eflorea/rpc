@@ -46,7 +46,7 @@ class Field
 				return "''";
 			}
 			
-			return trim( substr( $matches[0][1][0], 0, -3 ) );
+			return trim( trim( substr( $matches[0][1][0], 0, -3 ) ), ';' );
 		}
 		
 		$regex = new \RPC\Regex( '/' . $name . '="([^"]+)"/' );
@@ -114,7 +114,7 @@ class Field
 		if( strpos( $html, $name . '="<' ) !== false )
 		{
 			$regex = new \RPC\Regex( '/' . $name . '="<\?=.*?(?<=\?>")/' );
-			return $regex->replace( $html, $name . '="' . $value . '"' );
+			return $regex->replace( $html, '' . $name . '="' . $value . '"' );
 		}
 		elseif( strpos( $html, $name . '="' ) !== false )
 		{

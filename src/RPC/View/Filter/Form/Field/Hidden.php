@@ -13,7 +13,6 @@ use RPC\Regex;
  * into
  * 
  * <code><?php $form->hidden( 'u[username]', $user->username, 'id="username"' ); ?></code>
- * (considering that the form's method is post)
  * 
  * @package View
  */
@@ -22,7 +21,7 @@ class Hidden extends Field
 	
 	public function filter( $source )
 	{
-		$regex = new \RPC\Regex( '/<input.*?type="hidden".*?>/' );
+		$regex = new \RPC\Regex( '/<input.*?type="hidden".*?(?<!\?)>/' );
 		$regex->match( $source, $inputs );
 				
 		foreach( $inputs as $input )
@@ -46,7 +45,7 @@ class Hidden extends Field
 				continue;
 			}
 			
-			$new_input = $this->setAttribute( $input, 'value', '<?php echo $form->hidden( ' . $name . ', ' . $value . ' ) ?>' );
+			$new_input = $this->setAttribute( $input, 'value', '<?php echo $form->hidden( ' . $name . ', ' . $value . ' ); ?>' );
 			
 			$source = str_replace( $input, $new_input, $source );
 		}

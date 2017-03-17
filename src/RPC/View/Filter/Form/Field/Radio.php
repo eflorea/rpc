@@ -29,7 +29,7 @@ class Radio extends Field
 	 */
 	public function filter( $source )
 	{
-		$regex = new \RPC\Regex( '/<input.*?type="radio".*?>/' );
+		$regex = new \RPC\Regex( '/<input.*?type="radio".*?(?<!\?)>/' );
 		$regex->match( $source, $inputs );
 		
 		foreach( $inputs as $input )
@@ -49,7 +49,7 @@ class Radio extends Field
 				continue;
 			}
 			
-			$new_input = $this->setAttribute( $input, 'checked', '<?php echo $form->radio( ' . $name . ', ' . $value . ', ' . $checked . ' ) ?>' );
+			$new_input = $this->setAttribute( $input, 'checked', '<?php echo $form->radio( ' . $name . ', ' . $value . ', ' . $checked . ' ); ?>' );
 			
 			$source = str_replace( $input, $new_input, $source );
 		}

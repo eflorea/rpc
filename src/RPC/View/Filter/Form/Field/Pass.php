@@ -21,7 +21,7 @@ class Pass extends Field
 	
 	public function filter( $source )
 	{
-		$regex = new \RPC\Regex( '/<input.*?type="password".*?>/' );
+		$regex = new \RPC\Regex( '/<input.*?type="password".*?(?<!\?)>/' );
 		$regex->match( $source, $inputs );
 		
 		foreach( $inputs as $input )
@@ -45,7 +45,7 @@ class Pass extends Field
 				continue;
 			}
 			
-			$new_input = $this->setAttribute( $input, 'value', '<?php echo $form->text( ' . $name . ', ' . $value . ' ) ?>' );
+			$new_input = $this->setAttribute( $input, 'value', '<?php echo $form->text( ' . $name . ', ' . $value . ' ); ?>' );
 			
 			$source = str_replace( $input, $new_input, $source );
 		}
