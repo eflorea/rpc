@@ -1,6 +1,9 @@
 <?php
 
+namespace RPC\View\Filter;
 
+use RPC\View\Filter;
+use RPC\Regex;
 
 /**
  * Transforms code like <code><error src="username"><p class="error">Invalid username</p></error></code>
@@ -8,7 +11,7 @@
  * 
  * @package View
  */
-class RPC_View_Filter_Error implements RPC_View_Filter
+class Error extends Filter
 {
 	
 	/**
@@ -21,13 +24,6 @@ class RPC_View_Filter_Error implements RPC_View_Filter
 	protected $error_format = '<div class="has-error" id="error-{id}"><span class="help-block">{message}</span></div>';
 	
 	/**
-	 * Class constructor
-	 */
-	public function __construct()
-	{
-	}
-	
-	/**
 	 * Replaces all error tag occurences with the necessary PHP code
 	 * 
 	 * @param string $source
@@ -36,14 +32,14 @@ class RPC_View_Filter_Error implements RPC_View_Filter
 	 */
 	public function filter( $source )
 	{
-		$regex = new RPC_Regex( '/<error id="([a-zA-Z0-9_\-]+)">/' );
+		$regex = new \RPC\Regex( '/<error id="([a-zA-Z0-9_\-]+)"><\/error>/' );
 		
 		if( $regex->match( $source, $matches ) )
 		{
 			foreach( $matches as $match )
 			{
 				$php  = '<?php if( isset( $view->plugin_error->' . $match[1][0] . ' ) ): ?>';
-				$php .= str_replace( array( '{id}', '{message}' ), array( $match[1][0], '<?php echo $view->plugin_error->get( "' . $match[1][0] . '" ) ?>' ), $this->error_format );
+				$php .= str_replace( array( '{id}', '{message}' ), array( $match[1][0], '<?php echo $view->getError( "' . $match[1][0] . '" ) ?>' ), $this->error_format );
 				$php .= '<?php endif ?>';
 				
 				$source = str_replace( $match[0][0], $php, $source );

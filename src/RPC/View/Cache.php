@@ -40,12 +40,12 @@ class Cache
 		
 		if( ! is_dir( $path ) )
 		{
-			throw new \Exception( $path . ' is not a directory' );
+			throw new Exception( $path . ' is not a directory' );
 		}
 		
 		if( ! is_writable( $path ) )
 		{
-			throw new \Exception( $path . ' must be writeable' );
+			throw new Exception( $path . ' must be writeable' );
 		}
 		
 		$this->directory = $path;
@@ -130,7 +130,7 @@ class Cache
 
 		if( ! file_put_contents( $this->getPathForFile( $file, $template_name ), $content ) )
 		{
-			throw new \Exception( 'Cannot write cached version of template "' . $file  . '" to "' . $this->getPathForFile( $file, $template_name ) . '"' );
+			throw new Exception( 'Cannot write cached version of template "' . $file  . '" to "' . $this->getPathForFile( $file, $template_name ) . '"' );
 		}
 
 		return $this;

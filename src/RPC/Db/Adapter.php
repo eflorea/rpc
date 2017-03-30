@@ -33,7 +33,7 @@ abstract class Adapter
 	 * 
 	 * @var int
 	 */
-	protected $_rpc_fetchmode = RPC\Db::FETCH_ASSOC;
+	protected $_rpc_fetchmode = \RPC\Db::FETCH_ASSOC;
 	
 	/**
 	 * Number of affected rows by the last statement
@@ -73,7 +73,7 @@ abstract class Adapter
 	 * 
 	 * @param PDO $handle
 	 */
-	protected function setHandle( PDO $handle )
+	protected function setHandle( \PDO $handle )
 	{
 		$this->_rpc_handle = $handle;
 	}
@@ -140,14 +140,14 @@ abstract class Adapter
 	 */
 	public function execute( $sql )
 	{
-		if( ! RPC\Signal::emit( array( 'RPC\Db', 'query_start' ), array( $sql, 'statement' ) ) )
+		if( ! \RPC\Signal::emit( array( '\RPC\Db', 'query_start' ), array( $sql, 'statement' ) ) )
 		{
 			return 0;
 		}
 		
 		$this->_rpc_affectedrows = $this->getHandle()->exec( $sql );
 		
-		RPC\Signal::emit( array( 'RPC\Db', 'query_end' ), array( $sql, 'statement' ) );
+		\RPC\Signal::emit( array( '\RPC\Db', 'query_end' ), array( $sql, 'statement' ) );
 
 		return $this->_rpc_affectedrows;
 	}
@@ -161,14 +161,14 @@ abstract class Adapter
 	 */
 	public function query( $sql )
 	{
-		if( ! RPC\Signal::emit( array( 'RPC\Db', 'query_start' ), array( $sql, 'query' ) ) )
+		if( ! \RPC\Signal::emit( array( 'RPC\Db', 'query_start' ), array( $sql, 'query' ) ) )
 		{
 			return null;
 		}
 
 		$res = $this->getHandle()->query( $sql, $this->getFetchMode() );
 		
-		RPC\Signal::emit( array( 'RPC\Db', 'query_end' ), array( $sql, 'query' ) );
+		\RPC\Signal::emit( array( '\RPC\Db', 'query_end' ), array( $sql, 'query' ) );
 		
 		return $res->fetchAll();
 	}

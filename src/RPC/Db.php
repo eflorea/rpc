@@ -16,17 +16,17 @@ class Db
 	/**
 	 * Columns are only numerically indexed
 	 */
-	const FETCH_NUM = PDO::FETCH_NUM;
+	const FETCH_NUM = \PDO::FETCH_NUM;
 	
 	/**
 	 * Columns are mapped as associative keys of the rows
 	 */
-	const FETCH_ASSOC = PDO::FETCH_ASSOC;
+	const FETCH_ASSOC = \PDO::FETCH_ASSOC;
 	
 	/**
 	 * Columns are mapped as properties of the rows
 	 */
-	const FETCH_OBJ = PDO::FETCH_OBJ;
+	const FETCH_OBJ = \PDO::FETCH_OBJ;
 	
 	/**
 	 * Query is an insert statement
@@ -119,11 +119,17 @@ class Db
 		*/
 		$info = self::$connections[$connection];
 		
-		$tmp = 'RPC\Db\Adapter\\' . $info['adapter'];
-		$database = new $tmp( $info['hostname'],
+		$tmp = '\RPC\Db\Adapter\\' . $info['adapter'];
+
+		$database = new \RPC\Db\Adapter\MySQL( $info['hostname'],
 		                      $info['database'],
 		                      $info['socket'],
 		                      $info['port'] );
+/*
+		$database = new $tmp( $info['hostname'],
+		                      $info['database'],
+		                      $info['socket'],
+		                      $info['port'] );*/
 		$database->connect( $info['username'], $info['password'] );
 		$database->setPrefix( $info['prefix'] );
 		

@@ -277,7 +277,7 @@ abstract class MySQL extends Adapter
 		return null;
 	}
 	
-	protected function insertRow( RPC\Db\Table\Row $row )
+	protected function insertRow( \RPC\Db\Table\Row $row )
 	{
 		$columns = array();
 		$values    = array();
@@ -317,7 +317,7 @@ abstract class MySQL extends Adapter
 		return $this->getDb()->prepare( $sql )->execute( $values );
 	}
 	
-	public function updateRow( RPC\Db\Table\Row $row )
+	public function updateRow( \RPC\Db\Table\Row $row )
 	{
 		$columns = array();
 		$values  = array();
@@ -390,7 +390,7 @@ abstract class MySQL extends Adapter
 		return (int) $res[0]['nr'];
 	}
 	
-	public function unique( $column, RPC\Db\Table\Row $row )
+	public function unique( $column, \RPC\Db\Table\Row $row )
 	{
 		$values[0] = $row[$column];
 		

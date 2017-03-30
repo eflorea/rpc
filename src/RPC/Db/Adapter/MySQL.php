@@ -143,7 +143,7 @@ class MySQL extends Adapter
 	 */
 	public function prepare( $sql, $options = array() )
 	{
-		return new RPC\Db\Statement( $sql, $options, $this );
+		return new \RPC\Db\Statement( $sql, $options, $this );
 	}
 	
 }

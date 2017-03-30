@@ -179,7 +179,7 @@ abstract class Adapter implements Countable
 	 * 
 	 * @return bool
 	 */
-	abstract protected function insertRow( RPC_Db_Table_Row $row );
+	abstract protected function insertRow( \RPC\Db\Table\Row $row );
 	
 	/**
 	 * Performs an update given the supplied data
@@ -188,7 +188,7 @@ abstract class Adapter implements Countable
 	 * 
 	 * @return RPC_Db_Table_Row
 	 */
-	abstract protected function updateRow( RPC_Db_Table_Row $row );
+	abstract protected function updateRow( \RPC\Db\Table\Row $row );
 	
 	/**
 	 * Deletes all records in a table;
@@ -230,7 +230,7 @@ abstract class Adapter implements Countable
 	 * 
 	 * @return bool
 	 */
-	abstract public function unique( $column, RPC\Db\Table\Row $row );
+	abstract public function unique( $column, \RPC\Db\Table\Row $row );
 	
 	/**
 	 * Locks a table
@@ -253,7 +253,7 @@ abstract class Adapter implements Countable
 	 */
 	public function __construct()
 	{
-		$this->setDb( RPC\Db::factory() );
+		$this->setDb( \RPC\Db::factory() );
 		
 		if( $this->getName() )
 		{
@@ -263,6 +263,7 @@ abstract class Adapter implements Countable
 		{
 			$classname = get_class( $this );
 			$name = $this->force_table_name ? $this->force_table_name : str_replace( 'model', '', strtolower( $classname ) );
+			$name = strtolower( str_replace( 'APP\Model\\', '', $classname));
 			$this->setName( $this->getDb()->getPrefix() . $name );
 		
 			$classrow = str_replace( 'Model', '', $classname ) . 'Row';
@@ -279,7 +280,7 @@ abstract class Adapter implements Countable
 		
 		$this->loadFields();
 		
-		$this->setIdentityMap( new RPC\Db\Table\Row\Map() );
+		$this->setIdentityMap( new \RPC\Db\Table\Row\Map() );
 	}
 	
 	/**
@@ -287,7 +288,7 @@ abstract class Adapter implements Countable
 	 * 
 	 * @param RPC_Db_Adapter $database
 	 */
-	protected function setDb( RPC\Db\Adapter $db )
+	protected function setDb( \RPC\Db\Adapter $db )
 	{
 		$this->db = $db;
 	}
@@ -327,7 +328,7 @@ abstract class Adapter implements Countable
 	 * 
 	 * @param RPC_Db_Table_RowMap $map
 	 */
-	public function setIdentityMap( RPC\Db\Table\Row\Map $map )
+	public function setIdentityMap( \RPC\Db\Table\Row\Map $map )
 	{
 		$this->map = $map;
 	}
@@ -547,7 +548,7 @@ abstract class Adapter implements Countable
 	 * 
 	 * @return bool
 	 */
-	public function validate( RPC\Db\Table\Row $row )
+	public function validate( \RPC\Db\Table\Row $row )
 	{
 		$pk = $row->getPk();
 		$operation = empty( $pk ) ? RPC_Db::QUERY_INSERT : RPC_Db::QUERY_UPDATE;
@@ -587,11 +588,11 @@ abstract class Adapter implements Countable
 	 * 
 	 * @return bool
 	 */
-	public function insert( RPC_Db_Table_Row $row )
+	public function insert( \RPC\Db\Table\Row $row )
 	{
 		$this->getDb()->beginTransaction();
 		
-		if( ! $this->onBeforeSave( $row, RPC_Db::QUERY_INSERT ) )
+		if( ! $this->onBeforeSave( $row, \RPC\Db::QUERY_INSERT ) )
 		{
 			$this->getDb()->rollback();
 			return false;
@@ -621,7 +622,7 @@ abstract class Adapter implements Countable
 			return false;
 		}
 		
-		if( ! $this->onAfterSave( $row, RPC_Db::QUERY_INSERT ) )
+		if( ! $this->onAfterSave( $row, \RPC\Db::QUERY_INSERT ) )
 		{
 			$this->getDb()->rollback();
 			return false;
@@ -671,7 +672,7 @@ abstract class Adapter implements Countable
 	{
 		$this->getDb()->beginTransaction();
 		
-		if( ! $this->onBeforeSave( $row, RPC\Db::QUERY_UPDATE ) )
+		if( ! $this->onBeforeSave( $row, \RPC\Db::QUERY_UPDATE ) )
 		{
 			$this->getDb()->rollback();
 			return false;
@@ -699,7 +700,7 @@ abstract class Adapter implements Countable
 			return false;
 		}
 		
-		if( ! $this->onAfterSave( $row, RPC\Db::QUERY_UPDATE ) )
+		if( ! $this->onAfterSave( $row, \RPC\Db::QUERY_UPDATE ) )
 		{
 			$this->getDb()->rollback();
 			return false;
@@ -806,6 +807,16 @@ abstract class Adapter implements Countable
 	{
 		return true;
 	}
+
+    public static function __callStatic( $name, $arguments )
+    {
+    	$name = ucwords( $name );
+    	$name = '\\' . get_called_class() . '\\' . $name;
+    	if( is_callable( $name . '::insert'  ) )
+    	{
+    		return new $name();
+    	}
+    }
 	
 }
 

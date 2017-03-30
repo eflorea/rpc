@@ -3,10 +3,8 @@
 namespace RPC;
 
 
-
-
 use RPC\View\Cache;
-use RPC\View\Form;
+use RPC\View\Filter\Form;
 
 use RPC\Signal;
 
@@ -41,6 +39,9 @@ class View
 	protected $_view_tpldir = '';
 
 	protected $_view_filters = array();
+
+
+	protected $_view_errors = array();
 	
 	/**
 	 * Default filters
@@ -54,7 +55,7 @@ class View
 		'\RPC\View\Filter\Render',
 		'\RPC\View\Filter\Placeholder',
 		// '\RPC\View\Filter\Datagrid',
-		// '\RPC\View\Filter\Error'
+		'\RPC\View\Filter\Error'
 	);
 	
 	/**
@@ -477,6 +478,31 @@ class View
 		}
 		
 		return $source;
+	}
+
+
+	public function newForm()
+	{
+		return new \RPC\View\Filter\Form();
+	}
+
+
+	public function getError( $id = '' )
+	{
+		if( isset( $this->_view_errors[$id] ) )
+		{
+			return $this->_view_errors[$id];
+		}
+
+		return '';
+	}
+
+	public function setErrors( $errors = array() )
+	{
+		if( count( $errors ) )
+		{
+			$this->_view_errors = array_replace( $this->_view_errors, $errors );
+		}
 	}
 	
 }

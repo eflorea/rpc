@@ -13,6 +13,9 @@ class Controller
 
 	protected $vars = array();
 
+	public $request;
+	public $response;
+
 	public function display( $template = null )
 	{	
 		$this->template = $template;

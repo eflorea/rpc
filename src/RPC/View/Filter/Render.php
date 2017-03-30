@@ -3,6 +3,7 @@
 namespace RPC\View\Filter;
 
 use RPC\View\Filter;
+use RPC\Regex;
 
 /**
  * Transforms <code><render></render></code> tags into code which will render
@@ -10,7 +11,7 @@ use RPC\View\Filter;
  * 
  * @package View
  */
-class Render implements Filter
+class Render extends Filter
 {
 	
 	/**
@@ -28,7 +29,7 @@ class Render implements Filter
 	 */
 	public function filter( $source )
 	{
-		$regex = new RPC_Regex( '/<render>([^<]+)<\/render>/' );
+		$regex = new \RPC\Regex( '/<render>([^<]+)<\/render>/' );
 		$regex->match( $source, $matches );
 		
 		foreach( $matches as $match )

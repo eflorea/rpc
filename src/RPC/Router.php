@@ -176,6 +176,9 @@ class Router
 			//$request->validateCSRF();
 		}
 
+		$command->request  = $this->request;
+		$command->response = $this->response;
+
 		$command->methodCalled = $this->action;
 		
 		if( is_callable( array( $command, 'setup' ), false ) )
