@@ -71,7 +71,7 @@ class Row implements ArrayAccess
 	 * @param RPC_Db_Table_Adapter $table
 	 * @param object               $row
 	 */
-	public function __construct( RPC\Db\Table\Adapter $table, $row = array() )
+	public function __construct( \RPC\Db\Table\Adapter $table, $row = array() )
 	{
 		$this->setTable( $table );
 		
@@ -94,7 +94,7 @@ class Row implements ArrayAccess
 	 * 
 	 * @param RPC_Db_Table_Adapter $table
 	 */
-	protected function setTable( RPC\Db\Table\Adapter $table )
+	protected function setTable( \RPC\Db\Table\Adapter $table )
 	{
 		$this->table = $table;
 	}

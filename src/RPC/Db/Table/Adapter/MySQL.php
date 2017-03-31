@@ -47,128 +47,110 @@ abstract class MySQL extends Adapter
 			$GLOBALS['_RPC_']['models'][$this->getName()]['cleanfields'] = $this->cleanfields;
 		}
 	}
-	
-	public function getAll()
+
+	public static function query()
 	{
-		$sql = 'select * from `' . $this->getName() . '`';
-		return $this->getDb()->query( $sql );
+		$args = func_get_args();
+
+		$sql = $args[0];
+		$condition_values = array();
+
+		if( isset( $args[1] ) )
+		{
+			if( is_array( $args[1] ) )
+			{
+				$condition_values = $args[1];
+			}
+			else
+			{
+				$condition_values[] = $args[1];
+			}
+		}
+
+		$t = get_called_class();
+		$t = new $t( null, true );
+
+		if( $condition_values )
+		{
+			return $t->getDb()->prepare( $sql )->execute( $condition_values );
+		}
+	
+		return $t->getDb()->query( $sql );
 	}
-	
-	public function getBy( $field, $value )
+
+	public function get()
 	{
+		$args = func_get_args();
+
+		if( ! isset( $args[0] ) )
+		{
+			return false;
+		}
+
+		$condition_values = array();
+
+		if( is_array( $args[0] ) )
+		{
+			$condition = array();
+			foreach( $args[0] as $k => $r )
+			{
+				$condition[] = " " . $k . " = ? ";
+				$condition_values[] = $r; 
+			}
+			$condition = implode( ' and ', $condition );
+		}
+		else
+		{
+			$condition = $args[0];
+
+			//check if ? exists in condition
+			if( strpos( $condition, "?" ) === false )
+			{
+				$condition .= " = ? "; 
+			}
+
+			if( isset( $args[1] ) )
+			{
+				if( is_array( $args[1] ) )
+				{
+					$condition_values = $args[1];
+				}
+				else
+				{
+					$condition_values[] = $args[1];
+				}
+			}
+			elseif( is_numeric( $args[0] ) )
+			{
+				$condition = " " . $this->getPkField() . " = ? ";
+				$condition_values[] = $args[0];
+			}
+		}
+
 		$fields = $this->getFields();
 		$cleanfields = $this->getCleanFields();
-		
-		$field = strtolower( $field );
-		
-		$realfield = in_array( $field, $fields ) ? $field : @$cleanfields[$field];
-		
-		if( ! $realfield )
-		{
-			throw new \Exception( 'Field `' . $field . '` does not exist' );
-		}
-		
+				
 		$sql = 'select * from `' . $this->getName() . '` where '
-		     . '`' . $realfield . '`= ?';
-		return $this->getDb()->prepare( $sql )->execute( array( $value ) );
-	}
-	
-	public function loadBy( $field, $value )
-	{
-		$fields = $this->getFields();
-		$cleanfields = $this->getCleanFields();
-		
-		$field = strtolower( $field );
-		
-		$field = in_array( $field, $fields ) ? $field : @$cleanfields[$field];
-		
-		if( ! $field )
+		     . $condition . ' limit 1';
+		if( count( $condition_values ) )
 		{
-			throw new \Exception( 'Field `' . $field . '` does not exist' );
+			$res = $this->getDb()->prepare( $sql )->execute( $condition_values );
 		}
-		
-		$sql = 'select * from `' . $this->getName() . '` where `'
-		     . $field . '`=? limit 1';
-		$res = $this->getDb()->prepare( $sql )->execute( array( $value ) );
-		
+		else
+		{
+			$res = $this->getDb()->query( $sql );
+		}
+
 		if( count( $res ) )
 		{
-			$row = $res[0];
-			
-			/**
-			 * Applying any defined conversions on fields
-			 */
-			foreach( $cleanfields as $cf => $f )
-			{
-				$method = 'convert_' . $cf;
-				
-				if( method_exists( $this, $method ) )
-				{
-					$row[$f] = $this->$method( $row[$f] );
-				}
-			}
-			
-			return new $this->rowclass( $this, $row );
+			return $res[0];
 		}
 		
 		return null;
 	}
 
 
-	public function newObject( $row )
-	{
-		return new $this->rowclass( $this, $row );
-	}
-
-	
-	public function loadAllBy( $field, $value )
-	{
-		$fields = $this->getFields();
-		$cleanfields = $this->getCleanFields();
-		
-		$field = strtolower( $field );
-		
-		$field = in_array( $field, $fields ) ? $field : @$cleanfields[$field];
-		
-		if( ! $field )
-		{
-			throw new \Exception( 'Field `' . $field . '` does not exist' );
-		}
-		
-		$sql = 'select * from `' . $this->getName() . '` where `'
-		     . $field . '`=?';
-		$res = $this->getDb()->prepare( $sql )->execute( array( $value ) );
-		
-		if( count( $res ) )
-		{
-			$output = array();
-			
-			foreach( $res as $row )
-			{
-				/**
-				 * Applying any defined conversions on fields
-				 */
-				foreach( $cleanfields as $cf => $f )
-				{
-					$method = 'convert_' . $cf;
-					
-					if( method_exists( $this, $method ) )
-					{
-						$row[$f] = $this->$method( $row[$f] );
-					}
-				}
-				
-				$output[] = new $this->rowclass( $this, $row );
-			}
-			
-			return $output;
-		}
-		
-		return null;
-	}
-	
-
-	public function loadBySql( $condition, $condition_values = array() )
+	public function getAll()
 	{
 		$fields = $this->getFields();
 		$cleanfields = $this->getCleanFields();
@@ -176,9 +158,81 @@ abstract class MySQL extends Adapter
 		$condition = strtolower( $condition );
 		
 		$sql = 'select * from `' . $this->getName() . '` where '
-		     . $condition . ' limit 1';
+		     . $condition . '';
 		$res = $this->getDb()->prepare( $sql )->execute( $condition_values );
 		
+		if( count( $res ) )
+		{
+			return $res;
+		}
+		
+		return null;
+	}
+	
+
+	public function find()
+	{
+		$args = func_get_args();
+
+		if( ! isset( $args[0] ) )
+		{
+			return false;
+		}
+
+		$condition_values = array();
+
+		if( is_array( $args[0] ) )
+		{
+			$condition = array();
+			foreach( $args[0] as $k => $r )
+			{
+				$condition[] = " " . $k . " = ? ";
+				$condition_values[] = $r; 
+			}
+			$condition = implode( ' and ', $condition );
+		}
+		else
+		{
+			$condition = $args[0];
+
+			//check if ? exists in condition
+			if( strpos( $condition, "?" ) === false )
+			{
+				$condition .= " = ? "; 
+			}
+
+			if( isset( $args[1] ) )
+			{
+				if( is_array( $args[1] ) )
+				{
+					$condition_values = $args[1];
+				}
+				else
+				{
+					$condition_values[] = $args[1];
+				}
+			}
+			elseif( is_numeric( $args[0] ) )
+			{
+				$condition = " " . $this->getPkField() . " = ? ";
+				$condition_values[] = $args[0];
+			}
+		}
+
+		$fields = $this->getFields();
+		$cleanfields = $this->getCleanFields();
+				
+		$sql = 'select * from `' . $this->getName() . '` where '
+		     . $condition . ' limit 1';
+		if( count( $condition_values ) )
+		{
+			$res = $this->getDb()->prepare( $sql )->execute( $condition_values );
+		}
+		else
+		{
+			$res = $this->getDb()->query( $sql );
+		}
+
 		if( count( $res ) )
 		{
 			$row = $res[0];
@@ -202,7 +256,7 @@ abstract class MySQL extends Adapter
 		return null;
 	}
 	
-	public function loadAllBySql( $condition, $condition_values = array() )
+	public function findAll()
 	{
 		$fields = $this->getFields();
 		$cleanfields = $this->getCleanFields();
@@ -240,8 +294,9 @@ abstract class MySQL extends Adapter
 		return null;
 	}
 
-	public function loadAllByCustomSql( $condition, $condition_values = array() )
+	public function findBySql()
 	{
+
 		$fields = $this->getFields();
 		$cleanfields = $this->getCleanFields();
 		
@@ -440,6 +495,13 @@ abstract class MySQL extends Adapter
 		
 		return $res;
 	}
+
+
+	public static function __callStatic( $name, $arguments )
+    {
+    	$class_called = get_called_class();
+    	return new $class_called( $name );
+    }
 	
 }
 

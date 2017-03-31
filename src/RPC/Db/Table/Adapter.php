@@ -49,13 +49,15 @@ abstract class Adapter implements Countable
 	 * Force table's name
 	 */
 	public $force_table_name = '';
+
+	public $model_name = '';
 	
 	/**
 	 * Row object to be returned by load
 	 * 
 	 * @var string
 	 */
-	protected $rowclass = 'RPC\Db\Table\Row';
+	protected $rowclass = '\RPC\Db\Table\Row';
 	
 	/**
 	 * Table's primary key column's name
@@ -93,44 +95,6 @@ abstract class Adapter implements Countable
 	 */
 	abstract protected function loadFields();
 	
-	/**
-	 * Returns an array with all the table's rows
-	 * 
-	 * @return array
-	 */
-	abstract public function getAll();
-	
-	/**
-	 * Returns all the rows which have the given $field equal to $value
-	 * 
-	 * @param string $field
-	 * @param string $value
-	 * 
-	 * @return array
-	 */
-	abstract public function getBy( $field, $value );
-	
-	/**
-	 * Returns one row (the first in case there are more) which has the given
-	 * $field equal to $value. If no row is found, returns null
-	 * 
-	 * @param string $field
-	 * @param string $value
-	 * 
-	 * @return RPC_Db_Table_Row
-	 */
-	abstract public function loadBy( $field, $value );
-	
-	/**
-	 * Returns all rows which has the given
-	 * $field equal to $value. If no row is found, returns null
-	 * 
-	 * @param string $field
-	 * @param string $value
-	 * 
-	 * @return RPC_Db_Table_Row
-	 */
-	abstract public function loadAllBy( $field, $value );
 	
 	/**
 	 * Returns one row (the first in case there are more) which is returned by the query on the model's table. If no row is found, returns null
@@ -140,7 +104,7 @@ abstract class Adapter implements Countable
 	 * 
 	 * @return RPC_Db_Table_Row
 	 */
-	abstract public function loadBySql( $condition_sql, $condition_values );
+	abstract public function find();
 
 	/**
 	 * Returns all rows returned by the query on the model's table. If no row is found, returns null
@@ -150,7 +114,7 @@ abstract class Adapter implements Countable
 	 * 
 	 * @return RPC_Db_Table_Row
 	 */
-	abstract public function loadAllBySql( $condition_sql, $condition_values );
+	abstract public function findAll();
 	
 	/**
 	 * Returns all rows returned by the custom query. If no row is found, returns null
@@ -160,7 +124,7 @@ abstract class Adapter implements Countable
 	 * 
 	 * @return RPC_Db_Table_Row
 	 */
-	abstract public function loadAllByCustomSql( $condition_sql, $condition_values );
+	abstract public function findBySql();
 	
 	/**
 	 * Removes the rows which have the $field = $value
@@ -190,26 +154,7 @@ abstract class Adapter implements Countable
 	 */
 	abstract protected function updateRow( \RPC\Db\Table\Row $row );
 	
-	/**
-	 * Deletes all records in a table;
-	 * 
-	 * @return int Number of affected rows
-	 */
-	abstract public function deleteAll();
-	
-	/**
-	 * Deletes the table and recreates it
-	 * 
-	 * @return bool
-	 */
-	abstract public function truncate();
-	
-	/**
-	 * Should return the number of rows in the table
-	 * 
-	 * @return int
-	 */
-	abstract public function countRows();
+
 	
 	/**
 	 * Checks to see if the given value exists in the current table on the given
@@ -251,36 +196,55 @@ abstract class Adapter implements Countable
 	 * - object name will be: <table_name>Model
 	 * - table primary key will be: <table_name>_id
 	 */
-	public function __construct()
+	public function __construct( $table_name = null, $ignore_fields = false )
 	{
-		$this->setDb( \RPC\Db::factory() );
-		
-		if( $this->getName() )
+		if( ! $ignore_fields )
 		{
-			$name = $this->getName();
+			if( $table_name )
+			{
+				$this->force_table_name = $table_name;
+				$this->model_name = $table_name;
+			}
+
+			$this->setDb( \RPC\Db::factory() );
+			
+			
+			if( ! $this->force_table_name )
+			{
+				$classname = get_class( $this );
+				$classname = explode( '\\', trim( $classname, '\\' ) );
+
+				$this->model_name = end( $classname );
+			
+				$classrow = $this->rowclass . '\\' . $this->model_name;
+			
+				if( class_exists( $classrow ) )
+				{
+					$this->rowclass = $classrow; 
+				}
+			}
+			else
+			{
+				$classrow = $this->rowclass . '\\' . $this->model_name;
+			
+				if( class_exists( $classrow ) )
+				{
+					$this->rowclass = $classrow; 
+				}
+			}
+
+			$this->setName( $this->getDb()->getPrefix() . strtolower( $this->model_name ) );
+			
+			$this->setPkField( strtolower( $this->model_name ) . '_id' );
+			
+			$this->loadFields();
+			
+			$this->setIdentityMap( new \RPC\Db\Table\Row\Map() );
 		}
 		else
 		{
-			$classname = get_class( $this );
-			$name = $this->force_table_name ? $this->force_table_name : str_replace( 'model', '', strtolower( $classname ) );
-			$name = strtolower( str_replace( 'APP\Model\\', '', $classname));
-			$this->setName( $this->getDb()->getPrefix() . $name );
-		
-			$classrow = str_replace( 'Model', '', $classname ) . 'Row';
-		
-			if( class_exists( $classrow, false ) )
-			{
-				$this->rowclass = $classrow; 
-			}
+			$this->setDb( \RPC\Db::factory() );
 		}
-		
-		
-		
-		$this->setPkField( substr( $this->getName(), strlen( $this->getDb()->getPrefix() ) ) . '_id' );
-		
-		$this->loadFields();
-		
-		$this->setIdentityMap( new \RPC\Db\Table\Row\Map() );
 	}
 	
 	/**
@@ -450,74 +414,6 @@ abstract class Adapter implements Countable
 		return new $this->rowclass( $this, $tmp );
 	}
 	
-	/**
-	 * Loads a row from the table or from the identity map if it has already
-	 * been loaded. If no row is found, returns null
-	 * 
-	 * @link http://www.martinfowler.com/eaaCatalog/identityMap.html
-	 * 
-	 * @param int $pk
-	 * 
-	 * @return RPC_Db_Table_Row
-	 */
-	public function load( $pk )
-	{
-		if( ! $pk )
-		{
-			return null;
-		}
-		
-		/*
-			First I check to see if the row hasn't already been loaded in the
-			identity map so that I won't query the database again
-		*/
-		if( $row = $this->getIdentityMap()->get( $pk ) )
-		{
-			return $row;
-		}
-		
-		/*
-			If it hasn't been loaded yet, I will query the database, and if a
-			row is found it is added to the map
-		*/
-		$row = $this->loadBy( $this->getPkField(), $pk );
-		if( is_object( $row ) )
-		{
-			$this->getIdentityMap()->add( $row );
-		}
-		
-		return $row;
-	}
-	
-	/**
-	 * Returns an Row object from an array (the array must have all row
-	 * data, including the pk). This is useful, for example, when selecting
-	 * multiple rows with a query and then creating new objects from each row
-	 * 
-	 * @param array $array
-	 * 
-	 * @return RPC_Db_Table_Row
-	 */
-	public function loadFromArray( $array ) /* {{{ */
-	{
-		$pk = $array[$this->getPkField()];
-		
-		if( empty( $pk ) )
-		{
-			throw new \Exception( 'The array must contain the primary key' );
-		}
-		
-		if( $row = $this->getIdentityMap()->get( $pk ) )
-		{
-			return $row;
-		}
-		
-		$row = new $this->rowclass( $this, $array );
-		$this->getIdentityMap()->add( $row );
-		
-		return $row;
-	}
-	/* }}} */
 	
 	/**
 	 * Get the table's fields
@@ -808,16 +704,6 @@ abstract class Adapter implements Countable
 		return true;
 	}
 
-    public static function __callStatic( $name, $arguments )
-    {
-    	$name = ucwords( $name );
-    	$name = '\\' . get_called_class() . '\\' . $name;
-    	if( is_callable( $name . '::insert'  ) )
-    	{
-    		return new $name();
-    	}
-    }
-	
 }
 
 ?>

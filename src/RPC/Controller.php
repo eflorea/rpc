@@ -39,6 +39,18 @@ class Controller
 	}
 
 
+	public function setErrors( $errors = array() )
+	{
+		$this->getView()->setErrors( $errors );
+	}
+
+
+	public function param( $name = null, $default = null )
+	{
+		return $this->request->getParam( $name, $default );
+	}
+
+
 	/**
 	 * Assigns a variable which will be available in the templates
 	 * 

@@ -329,6 +329,10 @@ class View
 	 */
 	public function display( $template = null )
 	{
+		if( $this->current_template )
+		{
+			return false;
+		}
 
 		if( ! $template )
 		{

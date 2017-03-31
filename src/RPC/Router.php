@@ -29,6 +29,8 @@ class Router
 
 		$this->request = \RPC\Request::getInstance();
 		$this->response = \RPC\HTTP\Response::getInstance();
+
+		$this->request->setRouter( $this );
 	}
 
 	public function setRewriteRules( $rules )
@@ -208,6 +210,11 @@ class Router
 			$command->teardown( $this->request, $this->response );
 		}
 
+	}
+
+	public function getParams()
+	{
+		return $this->params;
 	}
 }
 

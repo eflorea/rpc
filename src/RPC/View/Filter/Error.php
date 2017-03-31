@@ -33,12 +33,13 @@ class Error extends Filter
 	public function filter( $source )
 	{
 		$regex = new \RPC\Regex( '/<error id="([a-zA-Z0-9_\-]+)"><\/error>/' );
-		
+	
 		if( $regex->match( $source, $matches ) )
 		{
+
 			foreach( $matches as $match )
 			{
-				$php  = '<?php if( isset( $view->plugin_error->' . $match[1][0] . ' ) ): ?>';
+				$php  = '<?php if( $view->getError( \'' . $match[1][0] . '\' ) ): ?>';
 				$php .= str_replace( array( '{id}', '{message}' ), array( $match[1][0], '<?php echo $view->getError( "' . $match[1][0] . '" ) ?>' ), $this->error_format );
 				$php .= '<?php endif ?>';
 				

@@ -240,7 +240,7 @@ class Request
 	 * 
 	 * @return RPC_HTTP_Request
 	 */
-	public function setRouter( RPC\Controller\Router $router )
+	public function setRouter( \RPC\Router $router )
 	{
 		$this->router = $router;
 		return $this;

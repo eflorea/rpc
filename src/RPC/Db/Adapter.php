@@ -161,11 +161,11 @@ abstract class Adapter
 	 */
 	public function query( $sql )
 	{
-		if( ! \RPC\Signal::emit( array( 'RPC\Db', 'query_start' ), array( $sql, 'query' ) ) )
+		if( ! \RPC\Signal::emit( array( '\RPC\Db', 'query_start' ), array( $sql, 'query' ) ) )
 		{
 			return null;
 		}
-
+		
 		$res = $this->getHandle()->query( $sql, $this->getFetchMode() );
 		
 		\RPC\Signal::emit( array( '\RPC\Db', 'query_end' ), array( $sql, 'query' ) );

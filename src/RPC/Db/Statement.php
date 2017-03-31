@@ -13,7 +13,7 @@ use RPC\Signal;
  * 
  * @package Db
  */
-class RPC_Db_Statement
+class Statement
 {
 	
 	/**
@@ -44,7 +44,7 @@ class RPC_Db_Statement
 	 * @param array          $options
 	 * @param RPC_Db_Adapter $db
 	 */
-	public function __construct( $sql, $options = array(), RPC\Db\Adapter $db )
+	public function __construct( $sql, $options = array(), \RPC\Db\Adapter $db )
 	{
 		$this->db  = $db;
 		$this->sql = $sql;
@@ -75,14 +75,14 @@ class RPC_Db_Statement
 	 */
 	public function execute( $params = array() )
 	{
-		if( ! RPC\Signal::emit( array( 'RPC\Db', 'query_start' ), array( $this->sql, 'prepared' ) ) )
+		if( ! \RPC\Signal::emit( array( '\RPC\Db', 'query_start' ), array( $this->sql, 'prepared' ) ) )
 		{
 			return null;
 		}
 		
 		$res = $this->stmt->execute( $params );
 		
-		RPC\Signal::emit( array( 'RPC\Db', 'query_end' ), array( $this->sql, 'prepared' ) );
+		\RPC\Signal::emit( array( '\RPC\Db', 'query_end' ), array( $this->sql, 'prepared' ) );
 		
 		if( $res )
 		{

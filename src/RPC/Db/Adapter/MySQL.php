@@ -82,14 +82,14 @@ class MySQL extends Adapter
 			{
 				$dsn = 'mysql:host=' . $this->_rpc_hostname . ';dbname=' . $this->_rpc_database;
 			}
-			$GLOBALS['dbconnection'] = new PDO( $dsn, $username, $password );
+			$GLOBALS['dbconnection'] = new \PDO( $dsn, $username, $password );
 		}
 		
 		
 		$this->setHandle( $GLOBALS['dbconnection'] );
-		$this->getHandle()->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
-		$this->getHandle()->setAttribute( PDO::ATTR_CASE, PDO::CASE_LOWER );
-		$this->getHandle()->setAttribute( PDO::ATTR_AUTOCOMMIT, true );
+		$this->getHandle()->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
+		$this->getHandle()->setAttribute( \PDO::ATTR_CASE, \PDO::CASE_LOWER );
+		$this->getHandle()->setAttribute( \PDO::ATTR_AUTOCOMMIT, true );
 		
 		return $this;
 	}
