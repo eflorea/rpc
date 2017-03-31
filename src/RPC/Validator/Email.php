@@ -16,7 +16,7 @@ class Email extends Validator
 	 */
 	public function validate( $value )
 	{
-		return preg_match( RPC_Regex::EMAIL, $value );
+		return preg_match( \RPC\Regex::EMAIL, $value );
 	}
 	
 }

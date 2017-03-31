@@ -84,7 +84,7 @@ abstract class MySQL extends Adapter
 
 		if( ! isset( $args[0] ) )
 		{
-			return false;
+			return null;
 		}
 
 		$condition_values = array();
@@ -152,15 +152,136 @@ abstract class MySQL extends Adapter
 
 	public function getAll()
 	{
+		$args = func_get_args();
+
+		if( ! isset( $args[0] ) )
+		{
+			return null;
+		}
+
+		$condition_values = array();
+
+		if( is_array( $args[0] ) )
+		{
+			$condition = array();
+			foreach( $args[0] as $k => $r )
+			{
+				$condition[] = " " . $k . " = ? ";
+				$condition_values[] = $r; 
+			}
+			$condition = implode( ' and ', $condition );
+		}
+		else
+		{
+			$condition = $args[0];
+
+			//check if ? exists in condition
+			if( strpos( $condition, "?" ) === false )
+			{
+				$condition .= " = ? "; 
+			}
+
+			if( isset( $args[1] ) )
+			{
+				if( is_array( $args[1] ) )
+				{
+					$condition_values = $args[1];
+				}
+				else
+				{
+					$condition_values[] = $args[1];
+				}
+			}
+			elseif( is_numeric( $args[0] ) )
+			{
+				$condition = " " . $this->getPkField() . " = ? ";
+				$condition_values[] = $args[0];
+			}
+		}
+
 		$fields = $this->getFields();
 		$cleanfields = $this->getCleanFields();
-		
-		$condition = strtolower( $condition );
-		
+				
 		$sql = 'select * from `' . $this->getName() . '` where '
 		     . $condition . '';
-		$res = $this->getDb()->prepare( $sql )->execute( $condition_values );
+		if( count( $condition_values ) )
+		{
+			$res = $this->getDb()->prepare( $sql )->execute( $condition_values );
+		}
+		else
+		{
+			$res = $this->getDb()->query( $sql );
+		}
+
+		if( count( $res ) )
+		{
+			return $res;
+		}
 		
+		return null;
+	}
+
+
+	public function getBySql()
+	{
+
+		$args = func_get_args();
+
+		if( ! isset( $args[0] ) )
+		{
+			return false;
+		}
+
+		$condition_values = array();
+
+		if( is_array( $args[0] ) )
+		{
+			$condition = array();
+			foreach( $args[0] as $k => $r )
+			{
+				$condition[] = " " . $k . " = ? ";
+				$condition_values[] = $r; 
+			}
+			$condition = implode( ' and ', $condition );
+		}
+		else
+		{
+			$condition = $args[0];
+
+			//check if ? exists in condition
+			if( strpos( $condition, "?" ) === false )
+			{
+				$condition .= " = ? "; 
+			}
+
+			if( isset( $args[1] ) )
+			{
+				if( is_array( $args[1] ) )
+				{
+					$condition_values = $args[1];
+				}
+				else
+				{
+					$condition_values[] = $args[1];
+				}
+			}
+			elseif( is_numeric( $args[0] ) )
+			{
+				$condition = " " . $this->getPkField() . " = ? ";
+				$condition_values[] = $args[0];
+			}
+		}
+				
+		$sql = $condition;
+		if( count( $condition_values ) )
+		{
+			$res = $this->getDb()->prepare( $sql )->execute( $condition_values );
+		}
+		else
+		{
+			$res = $this->getDb()->query( $sql );
+		}
+
 		if( count( $res ) )
 		{
 			return $res;
@@ -258,20 +379,73 @@ abstract class MySQL extends Adapter
 	
 	public function findAll()
 	{
+		$args = func_get_args();
+
+		if( ! isset( $args[0] ) )
+		{
+			return false;
+		}
+
+		$condition_values = array();
+
+		if( is_array( $args[0] ) )
+		{
+			$condition = array();
+			foreach( $args[0] as $k => $r )
+			{
+				$condition[] = " " . $k . " = ? ";
+				$condition_values[] = $r; 
+			}
+			$condition = implode( ' and ', $condition );
+		}
+		else
+		{
+			$condition = $args[0];
+
+			//check if ? exists in condition
+			if( strpos( $condition, "?" ) === false )
+			{
+				$condition .= " = ? "; 
+			}
+
+			if( isset( $args[1] ) )
+			{
+				if( is_array( $args[1] ) )
+				{
+					$condition_values = $args[1];
+				}
+				else
+				{
+					$condition_values[] = $args[1];
+				}
+			}
+			elseif( is_numeric( $args[0] ) )
+			{
+				$condition = " " . $this->getPkField() . " = ? ";
+				$condition_values[] = $args[0];
+			}
+		}
+
 		$fields = $this->getFields();
 		$cleanfields = $this->getCleanFields();
-		
-		$condition = strtolower( $condition );
-		
+				
 		$sql = 'select * from `' . $this->getName() . '` where '
-		     . $condition . '';
-		$res = $this->getDb()->prepare( $sql )->execute( $condition_values );
-		
+		     . $condition . ' limit 1';
+		if( count( $condition_values ) )
+		{
+			$res = $this->getDb()->prepare( $sql )->execute( $condition_values );
+		}
+		else
+		{
+			$res = $this->getDb()->query( $sql );
+		}
+
 		if( count( $res ) )
 		{
 			$output = array();
+
 			foreach( $res as $row )
-			{
+			{				
 				/**
 				 * Applying any defined conversions on fields
 				 */
@@ -285,9 +459,9 @@ abstract class MySQL extends Adapter
 					}
 				}
 				
-				$output[] = new $this->rowclass( $this, $row );
+				$output[] = $this->rowclass( $this, $row );
 			}
-			
+
 			return $output;
 		}
 		
@@ -297,19 +471,72 @@ abstract class MySQL extends Adapter
 	public function findBySql()
 	{
 
+		$args = func_get_args();
+
+		if( ! isset( $args[0] ) )
+		{
+			return false;
+		}
+
+		$condition_values = array();
+
+		if( is_array( $args[0] ) )
+		{
+			$condition = array();
+			foreach( $args[0] as $k => $r )
+			{
+				$condition[] = " " . $k . " = ? ";
+				$condition_values[] = $r; 
+			}
+			$condition = implode( ' and ', $condition );
+		}
+		else
+		{
+			$condition = $args[0];
+
+			//check if ? exists in condition
+			if( strpos( $condition, "?" ) === false )
+			{
+				$condition .= " = ? "; 
+			}
+
+			if( isset( $args[1] ) )
+			{
+				if( is_array( $args[1] ) )
+				{
+					$condition_values = $args[1];
+				}
+				else
+				{
+					$condition_values[] = $args[1];
+				}
+			}
+			elseif( is_numeric( $args[0] ) )
+			{
+				$condition = " " . $this->getPkField() . " = ? ";
+				$condition_values[] = $args[0];
+			}
+		}
+
 		$fields = $this->getFields();
 		$cleanfields = $this->getCleanFields();
-		
-		$condition = strtolower( $condition );
-		
+				
 		$sql = $condition;
-		$res = $this->getDb()->prepare( $sql )->execute( $condition_values );
-		
+		if( count( $condition_values ) )
+		{
+			$res = $this->getDb()->prepare( $sql )->execute( $condition_values );
+		}
+		else
+		{
+			$res = $this->getDb()->query( $sql );
+		}
+
 		if( count( $res ) )
 		{
 			$output = array();
+
 			foreach( $res as $row )
-			{
+			{				
 				/**
 				 * Applying any defined conversions on fields
 				 */
@@ -323,14 +550,15 @@ abstract class MySQL extends Adapter
 					}
 				}
 				
-				$output[] = new $this->rowclass( $this, $row );
+				$output[] = $this->rowclass( $this, $row );
 			}
-			
+
 			return $output;
 		}
 		
 		return null;
 	}
+
 	
 	protected function insertRow( \RPC\Db\Table\Row $row )
 	{
@@ -416,52 +644,6 @@ abstract class MySQL extends Adapter
 		return $this->getDb()->prepare( $sql )->execute( array( $value ) );
 	}
 	
-	public function deleteAll()
-	{
-		return $this->getDb()->execute( 'delete from `' . $this->getName() . '`' );
-	}
-	
-	public function truncate()
-	{
-		return $this->getDb()->execute( 'truncate table `' . $this->getName() . '`' );
-	}
-	
-	public function countRows()
-	{
-		$res = $this->getDb()->query( 'select count(*) as nr from `' . $this->getName() . '`' );
-		
-		return (int) $res[0]['nr'];
-	}
-	
-	public function exists( $value, $column )
-	{
-		if( ! in_array( $column, $this->getFields() ) )
-		{
-			throw new \Exception( 'Column "' . $column . '" does not exist in table ' . $this->getName() );
-		}
-		
-		$res = $this->getDb()->prepare( 'select count(*) as nr from `' . $this->getName() . '` where `' . $column . '`=? limit 1' )->execute( array( $value ) );
-		
-		return (int) $res[0]['nr'];
-	}
-	
-	public function unique( $column, \RPC\Db\Table\Row $row )
-	{
-		$values[0] = $row[$column];
-		
-		$sql = 'select count(*) as nr from `' . $this->getName() . '` where '
-		     . '`' . $column . '`=?';
-		if( $row->getPk() )
-		{
-			$sql .= ' and ' . $this->getPkField() . '!=?';
-			$values[] = $row->getPk();
-		}
-		
-		$res = $this->getDb()->prepare( $sql )->execute( $values );
-		$row = $res[0];
-		
-		return ! (int) $row['nr'];
-	}
 	
 	/**
 	 * @todo Implement

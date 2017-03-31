@@ -2,7 +2,6 @@
 
 namespace RPC\Db\Table;
 
-use Countable;
 use ArrayAccess;
 
 use RPC\Db;
@@ -13,7 +12,7 @@ use RPC\Db\Table\Row;
  * 
  * @package Db
  */
-abstract class Adapter implements Countable
+abstract class Adapter
 {
 	
 	/**
@@ -95,6 +94,11 @@ abstract class Adapter implements Countable
 	 */
 	abstract protected function loadFields();
 	
+	abstract public function get();
+
+	abstract public function getAll();
+
+	abstract public function getBySql();
 	
 	/**
 	 * Returns one row (the first in case there are more) which is returned by the query on the model's table. If no row is found, returns null
@@ -155,27 +159,6 @@ abstract class Adapter implements Countable
 	abstract protected function updateRow( \RPC\Db\Table\Row $row );
 	
 
-	
-	/**
-	 * Checks to see if the given value exists in the current table on the given
-	 * column
-	 * 
-	 * @param string $column
-	 * @param string $value
-	 * 
-	 * @return bool
-	 */
-	abstract public function exists( $value, $column );
-	
-	/**
-	 * Checks to see if a value in a row is unique throught the table
-	 * 
-	 * @param string           $column Column on which to search
-	 * @param RPC_Db_Table_Row $row    Row which holds the value
-	 * 
-	 * @return bool
-	 */
-	abstract public function unique( $column, \RPC\Db\Table\Row $row );
 	
 	/**
 	 * Locks a table
@@ -306,48 +289,7 @@ abstract class Adapter implements Countable
 	{
 		return $this->map;
 	}
-	
-	/**
-	 * Implements Countable interface
-	 * 
-	 * @return int
-	 */
-	public function count()
-	{
-		return $this->countRows();
-	}
-	
-	/**
-	 * Magic method to allow for cleaner access to the (get|delete|load)By*
-	 * methods
-	 * 
-	 * @param string $method
-	 * @param array  $args
-	 * 
-	 * @return mixed
-	 */
-	public function __call( $method, $args )
-	{
-		if( strpos( $method, 'getBy' ) === 0 )
-		{
-			$field = substr( $method, 5 );
-			return $this->getBy( $field, $args[0] );
-		}
-		elseif( strpos( $method, 'deleteBy' ) === 0 )
-		{
-			$field = substr( $method, 8 );
-			return $this->deleteBy( $field, $args[0] );
-		}
-		elseif( strpos( $method, 'loadBy' ) === 0 )
-		{
-			$field = substr( $method, 6 );
-			return $this->loadBy( $field, $args[0] );
-		}
-		else
-		{
-			throw new \Exception( 'Method "' . $method . '" is not implemented' );
-		}
-	}
+
 	
 	/**
 	 * Set the table's primary key

@@ -33,6 +33,8 @@ class Request
 	 * PUT request method
 	 */
 	const METHOD_PUT  = 'put';
+
+	protected $uri;
 	
 	/**
 	 * All the headers
@@ -131,7 +133,7 @@ class Request
 	 */
 	public function getCookie( $name )
 	{
-		return new RPC\HTTP\Cookie( $name );
+		return new \RPC\HTTP\Cookie( $name );
 	}
 	
 	/**
@@ -238,7 +240,7 @@ class Request
 	 * 
 	 * @return RPC_HTTP_Request
 	 */
-	public function setRouter( RPC\Controller\Router $router )
+	public function setRouter( \RPC\Router $router )
 	{
 		$this->router = $router;
 		return $this;

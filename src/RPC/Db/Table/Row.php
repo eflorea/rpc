@@ -449,15 +449,278 @@ class Row implements ArrayAccess
 		
 		return $this;
 	}
+
+	//predefined validation functions
+	public function _validate_required( $column, $value = '', $msg = 'This field is required.' )
+	{
+		$v = new \RPC\Validator\NotEmpty( $msg );
+		if( ! $v->validate( $value ) )
+		{
+			return $this->setError( $column, $v->getError() );
+		}
+	}
+
+	public function _validate_email( $column, $value = '', $msg = 'This field requires a valid email address' )
+	{
+		$v = new \RPC\Validator\Email( $msg );
+		if( ! $v->validate( $value ) )
+		{
+			return $this->setError( $column, $v->getError() );
+		}
+	}
+
+	public function _validate_phone( $column, $value = '', $msg = 'This field requires a valid phone number.' )
+	{
+		$v = new \RPC\Validator\Phone( $msg );
+		if( ! $v->validate( $value ) )
+		{
+			return $this->setError( $column, $v->getError() );
+		}	
+	}
+
+	public function _validate_zip( $column, $value = '', $msg = 'This field requires a valid zip address.' )
+	{	
+		$v = new \RPC\Validator\Zip( $msg );
+		if( ! $v->validate( $value ) )
+		{
+			return $this->setError( $column, $v->getError() );
+		}
+	}
+
+	public function _validate_numeric( $column, $value = '', $msg = 'This field requires a numeric value.' )
+	{
+		$v = new \RPC\Validator\Numeric( $msg );
+		if( ! $v->validate( $value ) )
+		{
+			return $this->setError( $column, $v->getError() );
+		}
+	}
+
+	public function _validate_max( $column, $value = '', $max = 250, $msg = 'This field cannot contain be more than {$max} characters' )
+	{
+		$v = new \RPC\Validator\Length( -1, $max, $msg );
+		if( ! $v->validate( $value ) )
+		{
+			return $this->setError( $column, str_replace( '{$max}', $min, $v->getError() ) );
+		}
+	}
+
+	public function _validate_min( $column, $value = '', $min = 250, $msg = 'This field needs to have at least {$min} characters' )
+	{
+		$v = new \RPC\Validator\Length( $min, -1, $msg );
+		if( ! $v->validate( $value ) )
+		{
+			return $this->setError( $column, str_replace( '{$min}', $min, $v->getError() ) );
+		}
+	}
+
+	public function _validate_password( $column, $value = '', $msg = 'This field needs to be at least 6 characters long' )
+	{
+		$v = new \RPC\Validator\Password( $msg );
+		if( ! $v->validate( $value ) )
+		{
+			return $this->setError( $column, $v->getError() );
+		}
+	}
+
+	public function _parseValidateRules( $rule = '' )
+	{
+		$rules = array();
+
+		if( is_array( $rule ) )
+		{
+			foreach( $rule as $k => $r )
+			{
+				if( is_numeric( $k ) )
+				{
+					$rules[$r] = false;
+				}
+				else
+				{
+					$rules[$k] = $r;
+				}
+			}
+		}
+		else
+		{
+			$tmp = explode( '|', $rule );
+
+			if( $tmp )
+			{
+				foreach( $tmp as $k => $r )
+				{
+					if( $r )
+					{
+						$rules[$r] = false;
+					}
+				}
+			}
+		}
+
+		return $rules;
+	}
+
+	public function _validateField( $field, $rules = array() )
+	{
+		
+		if( count( $rules ) )
+		{
+			//check if optional is in the rules then ignore all the other rules
+			if( isset( $rules['optional'] ) )
+			{
+				if( $this->$field() == '' )
+				{
+					return true;
+				}
+			}
+
+			foreach( $rules as $rule => $msg )
+			{
+				//check if msg exists
+				if( is_numeric( $rule ) )
+				{
+					$rule = $msg;
+					$msg = false;
+				}
+				
+				if( strpos( $rule, 'max:' ) !== false ||
+					strpos( $rule, 'min:' ) !== false )
+				{
+					$min_or_max = str_replace( array( 'max:', 'min:' ), '', $rule );
+					$rule = str_replace( ':' . $min_or_max, '', $rule );
+
+					$method = '_validate_' . $rule;
+
+					if( $msg )
+					{
+						$this->$method( $field, $this->$field(), $min_or_max, $msg );
+					}
+					else
+					{
+						$this->$method( $field, $this->$field(), $min_or_max );
+					}
+				}
+				else
+				{
+					//check if a default validation exists
+					$method = '_validate_' . $rule;
+					if( method_exists( $this, $method ) )
+					{
+						if( $msg )
+						{
+							$this->$method( $field, $this->$field(), $msg );
+						}
+						else
+						{
+							$this->$method( $field, $this->$field() );
+						}
+					}
+					else
+					{
+						$this->$rule();
+					}
+				}
+
+				
+				//check if validation passed so we don't run the other rules
+				if( $this->getError( $field ) )
+				{
+					return false;
+				}
+			}
+		}
+		else
+		{
+			$method = 'validate_' . $field;
+			if( method_exists( $this, $method ) )
+			{
+				$this->$method();
+			}
+		}
+	}
 	
 	/**
 	 * Checks to see if the values on a row are valid
 	 * 
 	 * @return bool
 	 */
-	public function validate()
+	public function validate( $options = array() )
 	{
-		return $this->getTable()->validate( $this );
+		$pk = $this->getPk();
+
+		$validate_rules = array();
+		
+		if( method_exists( $this, 'preValidate' ) )
+		{
+			$this->preValidate();
+		}
+		
+		$cleanfields = $this->getTable()->getCleanFields();
+
+		if( count( $options ) )
+		{
+			//check if we have ignore
+			if( isset( $options['skip'] ) )
+			{
+				if( is_array( $options['skip'] ) )
+				{
+					foreach( $options['skip'] as $field )
+					{
+						unset( $cleanfields[$field] );
+					}
+				}
+				else
+				{
+					unset( $cleanfields[$field] );
+				}
+				unset( $options['skip'] );
+			}
+
+			if( count( $options ) )
+			{
+				foreach( $options as $field => $option )
+				{
+					//this is for when the rule doesn't exist and the user wants the default validation
+					if( is_numeric( $field ) )
+					{
+						if( isset( $cleanfields[$option] ) )
+						{
+							$validate_rules[$option] = $this->_parseValidateRules( '' );
+						}
+					}
+					else
+					{
+						if( isset( $cleanfields[$field] ) )
+						{
+							$validate_rules[$field] = $this->_parseValidateRules( $option );
+						}
+					}
+					
+				}
+			}
+		}
+		else
+		{
+			foreach( $cleanfields as $column => $field )
+			{
+				$validate_rules[$column] = $this->_parseValidateRules( '' );
+			}
+		}
+
+
+		foreach( $validate_rules as $field => $rules )
+		{
+			$this->_validateField( $field, $rules );
+		}
+		
+		d( $validate_rules );
+		
+		if( method_exists( $this, 'postValidate' ) )
+		{
+			$this->postValidate();
+		}
+		
+		return ! (bool) $this->hasErrors();
 	}
 	
 	/**

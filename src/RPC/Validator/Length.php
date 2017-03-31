@@ -38,7 +38,20 @@ class Length extends Validator
 		
 		$length = strlen( $value );
 		
-		return ( $this->min <= $length ) && ( $length <= $this->max );
+		$valid_min = ( $this->min <= $length );
+		$valid_max = ( $length <= $this->max );
+
+		if( $this->min == -1 )
+		{
+			$valid_min = true;
+		}
+
+		if( $this->max == -1 )
+		{
+			$valid_max = true;
+		}
+
+		return ( $valid_min && $valid_max );
 	}
 	
 }
