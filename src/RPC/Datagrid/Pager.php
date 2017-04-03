@@ -45,7 +45,9 @@ class Pager
 	 */
 	public function __construct()
 	{
-		$page = @RPC\HTTP\Request::getInstance()->get['page'];
+		$request = Request::getInstance();
+
+		$page = @$request->get['page'];
 		$this->setCurrent( (int)$page );
 	}
 	
@@ -73,7 +75,6 @@ class Pager
 	public function setCurrent( $page )
 	{
 		$this->current = $page;
-		
 		return $this;
 	}
 	

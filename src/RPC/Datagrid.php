@@ -13,7 +13,7 @@ use RPC\Db;
  * 
  * @package Datagrid
  */
-abstract class Datagrid
+class Datagrid
 {
 	
 	/**
@@ -56,13 +56,25 @@ abstract class Datagrid
 	 * @var RPC_Database_Adapter
 	 */
 	protected $db = null;
+
+
+	protected $model = null;
+
+	protected $conditions = array();
+	protected $sql_conditions = array();
+	protected $conditions_value = array();
+	protected $sql_conditions_values = array();
+
+	protected $manual_sql = null;
+
 	
 	/**
 	 * Class constructor
 	 */
-	public function __construct()
+	public function __construct( $model = null )
 	{
-		$this->setPager( new RPC\Datagrid\Pager() );
+		$this->model = $model;
+		$this->setPager( new Pager() );
 	}
 	
 	/**
@@ -75,7 +87,7 @@ abstract class Datagrid
 	 */
 	public function printSortBy( $column, $name )
 	{
-		$request = RPC\HTTP\Request::getInstance();
+		$request = Request::getInstance();
 		
 		$query  = $request->get;
 		$sortby = $this->getSortBy();
@@ -148,7 +160,7 @@ abstract class Datagrid
 		
 		if( ! $called )
 		{
-			$request   = RPC\HTTP\Request::getInstance();
+			$request   = Request::getInstance();
 			
 			if( empty( $request->get['sorted'] ) )
 			{
@@ -241,7 +253,7 @@ abstract class Datagrid
 	{
 		if( ! $this->db )
 		{
-			$this->db = RPC\Db::factory( 'default' );
+			$this->db = Db::factory( 'default' );
 		}
 		
 		return $this->db;
@@ -271,13 +283,140 @@ abstract class Datagrid
 	{
 		$this->rows = $rows;
 	}
+
+	public function getPrefix() {
+
+		return $this->getDb()->getPrefix();
+	
+	}
 	
 	/**
 	 * Returns an array of items
 	 * 
 	 * @return array
 	 */
-	abstract public function fetchRows( $from, $to );
+	public function fetchRows( $from, $to )
+	{
+		$db = $this->getDb();
+
+		if( $this->manual_sql )
+		{
+			$sql = trim( $this->manual_sql );
+			$sql = preg_replace( '/select /', 'select SQL_CALC_FOUND_ROWS', $this->manual_sql, 1 );
+		}
+		else
+		{
+			$sql = '
+				SELECT SQL_CALC_FOUND_ROWS
+					*
+				FROM
+					' . $this->model->getName();
+		}
+
+
+		$sort    = array();
+		$columns = $this->getSortBy();
+		//$columns = $this->sortby;
+		foreach( $columns as $column => $order )
+		{
+			$sort[] = $column . ' ' . $order;
+		}
+		$sort = empty( $sort ) ? '' : ' ORDER BY ' . implode( ',', $sort );
+		
+		$where = ( count( $this->conditions ) || $this->sql_conditions ) ? ' WHERE ' : '';
+		
+		if( count( $this->conditions ) )
+		{
+			
+			$where .= implode( ' AND ', $this->conditions );
+		}
+		
+		if( $this->sql_conditions )
+		{
+			if( count( $this->conditions ) )
+			{
+				$where .= ' AND ';
+			}
+			
+			$where .= ' ' . $this->sql_conditions . ' ';
+		}
+
+		$sql .= $where . '
+				' . $sort . '
+				LIMIT
+					' . $from . ', ' . ( $to - $from );
+
+		if( count( $this->sql_conditions_values ) )
+		{
+			$this->conditions_value = array_merge( $this->conditions_value, $this->sql_conditions_values );
+		}
+
+		if( count( $this->conditions_value ) )
+		{
+			$this->rows = $db->prepare( $sql )->execute( $this->conditions_value );
+		}
+		else
+		{
+			$this->rows = $db->prepare( $sql )->execute();
+		}		
+		
+		$this->getPager()->setTotal( $db->getFoundRows() );
+		
+		if( $this->model )
+		{
+			if( $this->rows )
+			{
+				foreach( $this->rows as $k => $r )
+				{
+					$this->rows[$k] = $this->model->newObject( $r );
+				}
+			}
+		}
+
+		return $this->rows;
+	}
+	
+	public function setCondition( $condition, $value )
+	{
+		$this->conditions[] = $condition;
+		if( is_array( $value ) )
+		{
+			foreach( $value as $v )
+			{
+				$this->conditions_value[] = $v;
+			}
+		}
+		else
+		{
+			$this->conditions_value[] = $value;
+		}
+	}
+	
+	public function setSqlCondition( $condition, $values )
+	{
+		$this->sql_conditions = $condition;
+		$this->sql_conditions_values = $values;
+	}
+	
+	public function setPerPage( $limit )
+	{
+		$this->getPager()->setPerPage( $limit );
+	}
+	
+	public function setSortBy( $sort, $order = '' )
+	{
+		$this->sortby[$sort] = $order;
+	}
+
+
+	public function setSql( $sql, $conditions = array() ) {
+		$this->manual_sql = $sql;
+		if( $conditions )
+		{
+			$this->conditions_value[] = $conditions;
+	
+		}
+	}
 	
 }
 

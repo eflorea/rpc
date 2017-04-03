@@ -5,15 +5,15 @@ namespace RPC;
 /**
  * Wrapper for a number of functions which could not be grouped under other
  * classes
- * 
+ *
  * @package Core
  */
 class Util
 {
-	
+
 	/**
 	 * Determines whether an IP address is in a given IP range.
-	 * 
+	 *
 	 * @param range A string giving the IP range. You can use semi-colons to
 	 *              seperate multiple IP's or IP ranges and you should use
 	 *              a dash to specify a range. Asterisks may be used in single IP
@@ -22,7 +22,7 @@ class Util
 	 *              "192.168.0.1-192.168.0.100;127.0.0.1". If the range is an
 	 *              empty string, this function will always return @p true.
 	 * @param ip    A string giving the IP address.
-	 * 
+	 *
 	 * @return bool
 	 */
 	public static function isIpInRange( $range, $ip )
@@ -31,14 +31,14 @@ class Util
 		{
 			return true;
 		}
-		
+
 		$ranges   = explode(';', $range);
 		$ipFields = explode('.', $ip);
 		$ipFields[0] = (int) ( isset( $ipFields[0]) ? $ipFields[0] : 0 );
 		$ipFields[1] = (int) ( isset( $ipFields[1]) ? $ipFields[1] : 0 );
 		$ipFields[2] = (int) ( isset( $ipFields[2]) ? $ipFields[2] : 0 );
 		$ipFields[3] = (int) ( isset( $ipFields[3]) ? $ipFields[3] : 0 );
-		
+
 		foreach( $ranges as $range )
 		{
 			if( strchr( $range, '-' ) )
@@ -54,7 +54,7 @@ class Util
 				$range2Fields[1] = (int) $range2Fields[1];
 				$range2Fields[2] = (int) $range2Fields[2];
 				$range2Fields[3] = (int) $range2Fields[3];
-				
+
 				$match = true;
 				for( $i = 0; $i < 4; $i++ )
 				{
@@ -65,7 +65,7 @@ class Util
 						break;
 					}
 				}
-				
+
 				if( $match == true )
 				{
 					return true;
@@ -78,7 +78,7 @@ class Util
 				$rangeFields[1] = ( $rangeFields[1] == '*' ? '*' : (int) $rangeFields[1] );
 				$rangeFields[2] = ( $rangeFields[2] == '*' ? '*' : (int) $rangeFields[2] );
 				$rangeFields[3] = ( $rangeFields[3] == '*' ? '*' : (int) $rangeFields[3] );
-				
+
 				$match = true;
 				for( $i = 0; $i < 4; $i++ )
 				{
@@ -86,41 +86,41 @@ class Util
 					{
 						continue;
 					}
-					
+
 					if( $ipFields[$i] != $rangeFields[$i] )
 					{
 						$match = false;
 						break;
 					}
 				}
-				
+
 				if( $match == true )
 				{
 					return true;
 				}
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Transforms a bidimensional array (like most result sets from a database
 	 * are) into an array where the option values are mapped as keys and their
 	 * content as the corresponding value.
-	 * 
+	 *
 	 * @param array  $array Bidimensional array or array of objects
 	 * @param string $key   Column in every array which will represent the
 	 *                      value of the option
 	 * @param string $value Column in every array which will represent the
 	 *                      content of the option
-	 * 
+	 *
 	 * @return array
 	 */
 	public static function arrayToOptions( $array, $key, $value )
 	{
 		$options = array();
-		
+
 		foreach( $array as $entry )
 		{
 			if( is_array( $entry ) )
@@ -132,20 +132,20 @@ class Util
 				$options[$entry->$key] = $entry->$value;
 			}
 		}
-		
+
 		return $options;
 	}
 	/**
 	 * A possible implementation of autoload. It also adds, if not already
 	 * added, the current directory to the include path.
-	 * 
+	 *
 	 * The function will check (only the first time it is run) if the
 	 * include_path contains the current directory and if not it will add it.
 	 * After that it will try to include a file named like the given parameter
 	 * but with "_" characters converted to "/".
-	 * 
+	 *
 	 * @param string $classname Name of the class that we will try to load
-	 * 
+	 *
 	 * @todo it should be able to receive a number of directories so that it
 	 * can search in more than one directory
 	 */
@@ -154,11 +154,11 @@ class Util
 		if( empty( $GLOBALS['_RPC_']['autoload']['firstrun'] ) )
 		{
 			$GLOBALS['_RPC_']['autoload']['firstrun'] = true;
-			
+
 			$rpcpath = realpath( dirname( __FILE__ ) . '/..' );
-			
+
 			$paths = explode( PATH_SEPARATOR, get_include_path() );
-			
+
 			if( ! in_array( $rpcpath, $paths ) )
 			{
 				set_include_path( get_include_path() . PATH_SEPARATOR . $rpcpath );
@@ -167,18 +167,18 @@ class Util
 
 		require str_replace( '_', '/', $classname ) . '.php';
 	}
-	
+
 	/**
 	 * Generates a password according to the type given. Actually the function
 	 * uses another two functions and calls the appropriate with an apropriate
 	 * number of parameters according to the first parameter.
-	 * 
+	 *
 	 * @param int $nice          Type of password to generate
 	 * @param int $length        Length of the returned password
 	 * @param string $allowchars Characters allowed in the password
-	 * 
+	 *
 	 * @return string
-	 * 
+	 *
 	 * @author Lars B. Jensen <lars.jensen@ljweb.com>
 	 */
 	public static function generatePassword( $nice = 1, $length = 8, $allowchars = '' )
@@ -211,11 +211,11 @@ class Util
 
 	/**
 	 * Generates an easy to remember password.
-	 * 
+	 *
 	 * @param int $length
-	 * 
+	 *
 	 * @return string
-	 * 
+	 *
 	 * @author Lars B. Jensen <lars.jensen@ljweb.com>
 	 */
 	public static function generatePronouncablePassword( $length = 8 )
@@ -223,11 +223,11 @@ class Util
 		$valid_consonant = 'bcdfghjkmnprstv';
 		$valid_vowel     = 'aeiouy';
 		$valid_numbers   = '0123456789';
-		
+
 		$consonant_length = strlen( $valid_consonant );
 		$vowel_length     = strlen( $valid_vowel );
 		$numbers_length   = strlen( $valid_numbers );
-		
+
 		$password = '';
 		while( strlen( $password ) < $length )
 		{
@@ -240,10 +240,10 @@ class Util
 				$password .= $valid_numbers[mt_rand( 0, ( $numbers_length - 1 ) )];
 			}
 		}
-		
+
 		return substr( $password, 0, $length );
 	}
-	
+
 	/**
 	 * Very customisable function to generate a password. Usually it is called by
 	 * the generatePassword function to ease things.
@@ -255,9 +255,9 @@ class Util
 	 * @param bool   $allow_special
 	 * @param bool   $fix_similar
 	 * @param string $valid_charset
-	 * 
+	 *
 	 * @return string
-	 * 
+	 *
 	 * @author Lars B. Jensen <lars.jensen@ljweb.com>
 	 */
 	public static function generatePasswordAdvanced( $length = 8, $allow_uppercase = 1, $allow_lowercase = 1, $allow_numbers = 1, $allow_special = 1, $fix_similar = 0, $valid_charset = '' )
@@ -281,14 +281,14 @@ class Util
 				$valid_charset .= '!#$%&()*+-./;<=>@\_';
 			}
 		}
-		
+
 		$charset_length = strlen( $valid_charset );
-		
+
 		$password = '';
 		while( strlen( $password ) < $length )
 		{
 			$char = $valid_charset[mt_rand( 0, ( $charset_length - 1 ) )];
-			
+
 			if( ( $fix_similar &&
 			      ! strpos( 'O01lI5S', $char ) ) ||
 			    ! $fix_similar )
@@ -296,7 +296,7 @@ class Util
 		    	$password .= $char;
 		    }
 		}
-		
+
 		return $password;
 	}
 
@@ -315,9 +315,30 @@ class Util
 
 		file_put_contents( $filename, $token );
 
-		return $token; 
+		return $token;
 	}
-	
+
+	/**
+	* Error Logging Interface
+	*
+	* We use this as a simple mechanism to access the logging
+	* class and send messages to be logged.
+	*
+	* @access	public
+	* @return	void
+	*/
+	public static function log_message( $level = 'error', $message, $php_error = false )
+	{
+		$log = new Log;
+
+		if ( ! $log->_threshold )
+		{
+			return;
+		}
+
+		$log->write_log( $level, $message, $php_error );
+	}
+
 }
 
 ?>

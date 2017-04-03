@@ -27,8 +27,8 @@ class Router
 		$this->controller 	= 'Home';
 		$this->action 		= 'index';
 
-		$this->request = \RPC\HTTP\Request::getInstance();
-		$this->response = \RPC\HTTP\Response::getInstance();
+		$this->request = Request::getInstance();
+		$this->response = Response::getInstance();
 
 		$this->request->setRouter( $this );
 	}

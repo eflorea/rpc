@@ -481,7 +481,7 @@ class Request
 
 
 	/**
-	 * Validate CSRT_TOKEN from GET or POST
+	 * Validate CSRF_TOKEN from GET or POST
 	 *	
 	 * @return boolean
 	 */

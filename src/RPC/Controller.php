@@ -25,17 +25,17 @@ class Controller
 
 	public function getView()
 	{
-		if( ! \RPC\Registry::registered( 'view' ) )
+		if( ! Registry::registered( 'view' ) )
 		{
-			$view = new \RPC\View( PATH_APP  . '/View', new \RPC\View\Cache( PATH_CACHE . '/view' ) );
+			$view = new \RPC\View( PATH_APP  . '/View', new Cache( PATH_CACHE . '/view' ) );
 			$view->setController( $this );
 
 			$view->setVars( $this->vars );
 
-			\RPC\Registry::set( 'view', $view );
+			Registry::set( 'view', $view );
 		}
 		
-		return \RPC\Registry::get( 'view' );
+		return Registry::get( 'view' );
 	}
 
 

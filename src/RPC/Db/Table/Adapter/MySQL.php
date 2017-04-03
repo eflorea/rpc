@@ -7,12 +7,11 @@ use RPC\Db\Table\Adapter;
 
 /**
  * MySQL driver implementation as a base for all model classes, mapping a table
- * 
+ *
  * @package Db
  */
 abstract class MySQL extends Adapter
 {
-	
 	/**
 	 * @todo Use a cache
 	 */
@@ -26,25 +25,20 @@ abstract class MySQL extends Adapter
 		if( ! empty( $GLOBALS['_RPC_']['models'][$this->getName()]['fields'] ) )
 		{
 			$this->fields      = $GLOBALS['_RPC_']['models'][$this->getName()]['fields'];
-			$this->cleanfields = $GLOBALS['_RPC_']['models'][$this->getName()]['cleanfields'];
 		}
 		else
 		{
 			$res = $this->getDb()->query( 'describe `' . $this->getName() . '`' );
-			
+
 			$table_prefix = str_replace( $this->getDb()->getPrefix(), '', $this->getName() ) . '_';
 			foreach( $res as $row )
 			{
 				$this->fields[] = $row['field'];
-
-				$clean = str_replace( $table_prefix, '', $row['field'] );
-				$this->cleanfields[$clean] = $row['field'];
 			}
-			
+
 			$res = null;
-			
+
 			$GLOBALS['_RPC_']['models'][$this->getName()]['fields']      = $this->fields;
-			$GLOBALS['_RPC_']['models'][$this->getName()]['cleanfields'] = $this->cleanfields;
 		}
 	}
 
@@ -74,7 +68,7 @@ abstract class MySQL extends Adapter
 		{
 			return $t->getDb()->prepare( $sql )->execute( $condition_values );
 		}
-	
+
 		return $t->getDb()->query( $sql );
 	}
 
@@ -95,7 +89,7 @@ abstract class MySQL extends Adapter
 			foreach( $args[0] as $k => $r )
 			{
 				$condition[] = " " . $k . " = ? ";
-				$condition_values[] = $r; 
+				$condition_values[] = $r;
 			}
 			$condition = implode( ' and ', $condition );
 		}
@@ -106,7 +100,7 @@ abstract class MySQL extends Adapter
 			//check if ? exists in condition
 			if( strpos( $condition, "?" ) === false )
 			{
-				$condition .= " = ? "; 
+				$condition .= " = ? ";
 			}
 
 			if( isset( $args[1] ) )
@@ -127,9 +121,6 @@ abstract class MySQL extends Adapter
 			}
 		}
 
-		$fields = $this->getFields();
-		$cleanfields = $this->getCleanFields();
-				
 		$sql = 'select * from `' . $this->getName() . '` where '
 		     . $condition . ' limit 1';
 		if( count( $condition_values ) )
@@ -145,7 +136,7 @@ abstract class MySQL extends Adapter
 		{
 			return $res[0];
 		}
-		
+
 		return null;
 	}
 
@@ -167,7 +158,7 @@ abstract class MySQL extends Adapter
 			foreach( $args[0] as $k => $r )
 			{
 				$condition[] = " " . $k . " = ? ";
-				$condition_values[] = $r; 
+				$condition_values[] = $r;
 			}
 			$condition = implode( ' and ', $condition );
 		}
@@ -178,7 +169,7 @@ abstract class MySQL extends Adapter
 			//check if ? exists in condition
 			if( strpos( $condition, "?" ) === false )
 			{
-				$condition .= " = ? "; 
+				$condition .= " = ? ";
 			}
 
 			if( isset( $args[1] ) )
@@ -199,9 +190,6 @@ abstract class MySQL extends Adapter
 			}
 		}
 
-		$fields = $this->getFields();
-		$cleanfields = $this->getCleanFields();
-				
 		$sql = 'select * from `' . $this->getName() . '` where '
 		     . $condition . '';
 		if( count( $condition_values ) )
@@ -217,7 +205,7 @@ abstract class MySQL extends Adapter
 		{
 			return $res;
 		}
-		
+
 		return null;
 	}
 
@@ -240,7 +228,7 @@ abstract class MySQL extends Adapter
 			foreach( $args[0] as $k => $r )
 			{
 				$condition[] = " " . $k . " = ? ";
-				$condition_values[] = $r; 
+				$condition_values[] = $r;
 			}
 			$condition = implode( ' and ', $condition );
 		}
@@ -251,7 +239,7 @@ abstract class MySQL extends Adapter
 			//check if ? exists in condition
 			if( strpos( $condition, "?" ) === false )
 			{
-				$condition .= " = ? "; 
+				$condition .= " = ? ";
 			}
 
 			if( isset( $args[1] ) )
@@ -271,7 +259,7 @@ abstract class MySQL extends Adapter
 				$condition_values[] = $args[0];
 			}
 		}
-				
+
 		$sql = $condition;
 		if( count( $condition_values ) )
 		{
@@ -286,10 +274,10 @@ abstract class MySQL extends Adapter
 		{
 			return $res;
 		}
-		
+
 		return null;
 	}
-	
+
 
 	public function find()
 	{
@@ -308,7 +296,7 @@ abstract class MySQL extends Adapter
 			foreach( $args[0] as $k => $r )
 			{
 				$condition[] = " " . $k . " = ? ";
-				$condition_values[] = $r; 
+				$condition_values[] = $r;
 			}
 			$condition = implode( ' and ', $condition );
 		}
@@ -319,7 +307,7 @@ abstract class MySQL extends Adapter
 			//check if ? exists in condition
 			if( strpos( $condition, "?" ) === false )
 			{
-				$condition .= " = ? "; 
+				$condition .= " = ? ";
 			}
 
 			if( isset( $args[1] ) )
@@ -341,8 +329,7 @@ abstract class MySQL extends Adapter
 		}
 
 		$fields = $this->getFields();
-		$cleanfields = $this->getCleanFields();
-				
+
 		$sql = 'select * from `' . $this->getName() . '` where '
 		     . $condition . ' limit 1';
 		if( count( $condition_values ) )
@@ -357,26 +344,26 @@ abstract class MySQL extends Adapter
 		if( count( $res ) )
 		{
 			$row = $res[0];
-			
+
 			/**
 			 * Applying any defined conversions on fields
 			 */
-			foreach( $cleanfields as $cf => $f )
+			foreach( $fields as $column )
 			{
-				$method = 'convert_' . $cf;
-				
+				$method = 'convert_' . $column;
+
 				if( method_exists( $this, $method ) )
 				{
-					$row[$f] = $this->$method( $row[$f] );
+					$row[$column] = $this->$method( $row[$column] );
 				}
 			}
-			
+
 			return new $this->rowclass( $this, $row );
 		}
-		
+
 		return null;
 	}
-	
+
 	public function findAll()
 	{
 		$args = func_get_args();
@@ -394,7 +381,7 @@ abstract class MySQL extends Adapter
 			foreach( $args[0] as $k => $r )
 			{
 				$condition[] = " " . $k . " = ? ";
-				$condition_values[] = $r; 
+				$condition_values[] = $r;
 			}
 			$condition = implode( ' and ', $condition );
 		}
@@ -405,7 +392,7 @@ abstract class MySQL extends Adapter
 			//check if ? exists in condition
 			if( strpos( $condition, "?" ) === false )
 			{
-				$condition .= " = ? "; 
+				$condition .= " = ? ";
 			}
 
 			if( isset( $args[1] ) )
@@ -427,8 +414,7 @@ abstract class MySQL extends Adapter
 		}
 
 		$fields = $this->getFields();
-		$cleanfields = $this->getCleanFields();
-				
+
 		$sql = 'select * from `' . $this->getName() . '` where '
 		     . $condition . ' limit 1';
 		if( count( $condition_values ) )
@@ -445,26 +431,26 @@ abstract class MySQL extends Adapter
 			$output = array();
 
 			foreach( $res as $row )
-			{				
+			{
 				/**
 				 * Applying any defined conversions on fields
 				 */
-				foreach( $cleanfields as $cf => $f )
+				foreach( $fields as $column )
 				{
-					$method = 'convert_' . $cf;
-					
+					$method = 'convert_' . $column;
+
 					if( method_exists( $this, $method ) )
 					{
-						$row[$f] = $this->$method( $row[$f] );
+						$row[$column] = $this->$method( $row[$column] );
 					}
 				}
-				
+
 				$output[] = $this->rowclass( $this, $row );
 			}
 
 			return $output;
 		}
-		
+
 		return null;
 	}
 
@@ -486,7 +472,7 @@ abstract class MySQL extends Adapter
 			foreach( $args[0] as $k => $r )
 			{
 				$condition[] = " " . $k . " = ? ";
-				$condition_values[] = $r; 
+				$condition_values[] = $r;
 			}
 			$condition = implode( ' and ', $condition );
 		}
@@ -497,7 +483,7 @@ abstract class MySQL extends Adapter
 			//check if ? exists in condition
 			if( strpos( $condition, "?" ) === false )
 			{
-				$condition .= " = ? "; 
+				$condition .= " = ? ";
 			}
 
 			if( isset( $args[1] ) )
@@ -519,8 +505,7 @@ abstract class MySQL extends Adapter
 		}
 
 		$fields = $this->getFields();
-		$cleanfields = $this->getCleanFields();
-				
+
 		$sql = $condition;
 		if( count( $condition_values ) )
 		{
@@ -536,30 +521,30 @@ abstract class MySQL extends Adapter
 			$output = array();
 
 			foreach( $res as $row )
-			{				
+			{
 				/**
 				 * Applying any defined conversions on fields
 				 */
-				foreach( $cleanfields as $cf => $f )
+				foreach( $fields as $column )
 				{
-					$method = 'convert_' . $cf;
-					
+					$method = 'convert_' . $column;
+
 					if( method_exists( $this, $method ) )
 					{
-						$row[$f] = $this->$method( $row[$f] );
+						$row[$column] = $this->$method( $row[$column] );
 					}
 				}
-				
+
 				$output[] = $this->rowclass( $this, $row );
 			}
 
 			return $output;
 		}
-		
+
 		return null;
 	}
 
-	
+
 	protected function insertRow( \RPC\Db\Table\Row $row )
 	{
 		$columns = array();
@@ -579,10 +564,10 @@ abstract class MySQL extends Adapter
 			{
 				continue;
 			}
-			
+
 			$columns[] = '`' . $column . '`';
-			
-			$method = 'revert_' . array_search( $column, $this->cleanfields );
+
+			$method = 'revert_' . $column;
 			if( method_exists( $this, $method ) )
 			{
 				$values[] = $this->$method( $row[$column] );
@@ -596,10 +581,10 @@ abstract class MySQL extends Adapter
 		$sql  = 'insert into `' . $this->getName() . '` ';
 		$sql .= '(' . implode( ',', $columns ) . ') values ';
 		$sql .= '(' . implode( ',', array_fill( 0, count( $columns ), '?' ) ) . ')';
-		
+
 		return $this->getDb()->prepare( $sql )->execute( $values );
 	}
-	
+
 	public function updateRow( \RPC\Db\Table\Row $row )
 	{
 		$columns = array();
@@ -611,8 +596,8 @@ abstract class MySQL extends Adapter
 			if( $column != $this->getPkField() )
 			{
 				$parts[]  = '`' . $column . '`=?';
-				
-				$method = 'revert_' . array_search( $column, $this->cleanfields );
+
+				$method = 'revert_' . $column;
 				if( method_exists( $this, $method ) )
 				{
 					$values[] = $this->$method( $row[$column] );
@@ -623,28 +608,22 @@ abstract class MySQL extends Adapter
 				}
 			}
 		}
-		
+
 		$sql .= implode( ',', $parts );
 		$sql .= ' where `' . $this->getPkField() . '`=?';
 		$values[] = $row->getPk();
-		
+
 		return $this->getDb()->prepare( $sql )->execute( $values );
 	}
-	
+
 	public function deleteBy( $field, $value )
 	{
-		$fields = $this->getFields();
-		$cleanfields = $this->getCleanFields();
-		
-		$field = strtolower( $field );
-		
-		$field = in_array( $field, $fields ) ? $field : $cleanfields[$field];
 		$sql   = 'delete from `' . $this->getName() . '` where `' . $field . '`=?';
-		
+
 		return $this->getDb()->prepare( $sql )->execute( array( $value ) );
 	}
-	
-	
+
+
 	/**
 	 * @todo Implement
 	 */
@@ -652,7 +631,7 @@ abstract class MySQL extends Adapter
 	{
 		throw new \Exception( 'Not implemented' );
 	}
-	
+
 	/**
 	 * @todo Implement
 	 */
@@ -670,12 +649,18 @@ abstract class MySQL extends Adapter
 		{
 			return unserialize( file_get_contents( $filename ) );
 		}
-		
+
 		$res = $this->getDb()->query( $sql );
-		
+
 		file_put_contents( $filename, serialize( $res ) );
-		
+
 		return $res;
+	}
+
+
+	public function newObject( $row )
+	{
+		return new $this->rowclass( $this, $row );
 	}
 
 
@@ -684,7 +669,7 @@ abstract class MySQL extends Adapter
     	$class_called = get_called_class();
     	return new $class_called( $name );
     }
-	
+
 }
 
 ?>
