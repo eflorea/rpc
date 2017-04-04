@@ -64,6 +64,7 @@ class Datagrid
 	protected $sql_conditions = array();
 	protected $conditions_value = array();
 	protected $sql_conditions_values = array();
+	protected $group_by;
 
 	protected $manual_sql = null;
 
@@ -331,17 +332,18 @@ class Datagrid
 			$where .= implode( ' AND ', $this->conditions );
 		}
 		
-		if( $this->sql_conditions )
+		if( count( $this->sql_conditions ) )
 		{
 			if( count( $this->conditions ) )
 			{
 				$where .= ' AND ';
 			}
 			
-			$where .= ' ' . $this->sql_conditions . ' ';
+			$where .= ' ' . implode( ' AND ', $this->sql_conditions  ). ' ';
 		}
 
 		$sql .= $where . '
+				' . $this->group_by . '
 				' . $sort . '
 				LIMIT
 					' . $from . ', ' . ( $to - $from );
@@ -378,6 +380,10 @@ class Datagrid
 	
 	public function setCondition( $condition, $value )
 	{
+		if( strpos( $condition, '?' ) === false )
+		{
+			$condition .= ' = ?'; 
+		}
 		$this->conditions[] = $condition;
 		if( is_array( $value ) )
 		{
@@ -394,8 +400,8 @@ class Datagrid
 	
 	public function setSqlCondition( $condition, $values )
 	{
-		$this->sql_conditions = $condition;
-		$this->sql_conditions_values = $values;
+		$this->sql_conditions[] = $condition;
+		$this->sql_conditions_values = array_merge( $this->sql_conditions_values, $values );
 	}
 	
 	public function setPerPage( $limit )
@@ -409,13 +415,35 @@ class Datagrid
 	}
 
 
-	public function setSql( $sql, $conditions = array() ) {
+	public function groupBy( $group_by = null )
+	{
+		$this->group_by = ' ' . $group_by . ' ';
+	}
+
+	public function query( $sql, $conditions = null ) {
 		$this->manual_sql = $sql;
+
 		if( $conditions )
 		{
-			$this->conditions_value[] = $conditions;
-	
+			if( is_array( $conditions ) )
+			{
+				$this->conditions_value = array_merge( $this->conditions_value, $conditions );
+			}
+			else
+			{
+				$this->conditions_value[] = $conditions;
+		
+			}
 		}
+	}
+
+	public function nextPageExists()
+	{
+		if( ( $this->getPager()->getCurrentPage() + 1 ) < $this->getPager()->getTotalPages() )
+		{
+			return 1;
+		}
+		return 0;
 	}
 	
 }
