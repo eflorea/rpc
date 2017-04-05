@@ -210,7 +210,7 @@ abstract class Adapter
 
 			$this->setName( $this->getDb()->getPrefix() . strtolower( $this->model_name ) );
 
-			$this->setPkField( strtolower( $this->model_name ) . '_id' );
+			$this->setPkField( 'id' );
 
 			$this->loadFields();
 
@@ -422,7 +422,22 @@ abstract class Adapter
 	 */
 	public function onBeforeInsert( $row )
 	{
-		return true;
+		//by default set created and modified dates
+		$row->created( date( 'Y-m-d H:i:s' ) );
+		$row->modified( date( 'Y-m-d H:i:s' ) );
+
+		//set status to active by default
+		if( ! $row->offsetGet( 'status' ) )
+		{
+			$row->status( 'active' );
+		}
+		elseif( $row->status() == 'deleted' &&
+				! $row->offsetGet( 'deleted' ) )
+		{
+			$row->deleted( date( 'Y-m-d H:i:s' ) );
+		}
+
+		return $row;
 	}
 
 	/**
@@ -499,6 +514,16 @@ abstract class Adapter
 	 */
 	public function onBeforeUpdate( $row )
 	{
+		//set modified date by default
+		$row->modified( date( 'Y-m-d H:i:s' ) );
+
+		if( $row->offsetGet( 'status' ) &&
+			$row->status() == 'deleted' &&
+			! $row->offsetGet( 'deleted' ) )
+		{
+			$row->deleted( date( 'Y-m-d H:i:s' ) );
+		}
+
 		return true;
 	}
 

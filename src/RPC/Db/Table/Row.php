@@ -268,7 +268,11 @@ class Row implements ArrayAccess
 	{
 		if( ! $this->offsetExists( $index ) )
 		{
-			return $this->extrafields[$index];
+			if( isset( $this->extrafields[$index] ) )
+			{
+				return $this->extrafields[$index];
+			}
+			return null;
 		}
 
 		return $this->row[$index];
