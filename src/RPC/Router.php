@@ -181,7 +181,10 @@ class Router
 		$command->request  = $this->request;
 		$command->response = $this->response;
 
-		$command->methodCalled = $this->action;
+		$command->current_method = $this->action;
+		$command_name = get_class( $command );
+		$command_name = explode( '\\', $command_name );
+		$command->current_controller = strtolower( end( $command_name ) );
 		
 		if( is_callable( array( $command, 'setup' ), false ) )
 		{

@@ -9,7 +9,8 @@ use RPC\View\Cache;
 class Controller
 {
 	protected $template;
-	protected $methodCalled;
+	public $current_method;
+	public $current_controller;
 
 	protected $vars = array();
 
@@ -29,6 +30,9 @@ class Controller
 		{
 			$view = new \RPC\View( PATH_APP  . '/View', new Cache( PATH_CACHE . '/view' ) );
 			$view->setController( $this );
+
+			$this->vars['current_method'] 		= $this->current_method;
+			$this->vars['current_controller'] 	= $this->current_controller;
 
 			$view->setVars( $this->vars );
 

@@ -67,6 +67,7 @@ class Datagrid
 	protected $group_by;
 
 	protected $manual_sql = null;
+	protected $join_sql = null;
 
 	
 	/**
@@ -314,6 +315,10 @@ class Datagrid
 					' . $this->model->getName();
 		}
 
+		if( $this->join_sql )
+		{
+			$sql .= ' ' . $this->join_sql . ' ';
+		}
 
 		$sort    = array();
 		$columns = $this->getSortBy();
@@ -397,12 +402,7 @@ class Datagrid
 			$this->conditions_value[] = $value;
 		}
 	}
-	
-	public function setSqlCondition( $condition, $values )
-	{
-		$this->sql_conditions[] = $condition;
-		$this->sql_conditions_values = array_merge( $this->sql_conditions_values, $values );
-	}
+
 	
 	public function setPerPage( $limit )
 	{
@@ -436,6 +436,13 @@ class Datagrid
 			}
 		}
 	}
+
+
+	public function sqlJoin( $join_sql )
+	{
+		$this->join_sql = $join_sql;
+	}
+
 
 	public function nextPageExists()
 	{

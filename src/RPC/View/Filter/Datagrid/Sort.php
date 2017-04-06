@@ -5,7 +5,7 @@ namespace RPC\View\Filter\Datagrid;
 use RPC\View\Filter;
 use RPC\Regex;
 
-class Sort implements Filter
+class Sort extends Filter
 {
 	
 	public function filter( $source )

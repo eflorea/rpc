@@ -54,7 +54,7 @@ class View
 		'\RPC\View\Filter\Echoo',
 		'\RPC\View\Filter\Render',
 		'\RPC\View\Filter\Placeholder',
-		// '\RPC\View\Filter\Datagrid',
+		'\RPC\View\Filter\Datagrid',
 		'\RPC\View\Filter\Error'
 	);
 	
@@ -345,12 +345,12 @@ class View
 				throw new \Exception( "Template Folder doesn't exits: " . $this->_view_tpldir . '/' . $class );
 			}
 
-			$template = $class . '/' . $this->controller->methodCalled . '.php';
+			$template = $class . '/' . $this->controller->current_method . '.php';
 
 			//check if template exists based on the method called;
-			if( ! is_file( $this->_view_tpldir . '/' . $class . '/' . $this->controller->methodCalled . '.php' ) )
+			if( ! is_file( $this->_view_tpldir . '/' . $class . '/' . $this->controller->current_method . '.php' ) )
 			{
-				throw new \Exception( "Template doesn't exits: " . $this->_view_tpldir . '/' . $class . '/' . $this->controller->methodCalled . '.php' );
+				throw new \Exception( "Template doesn't exits: " . $this->_view_tpldir . '/' . $class . '/' . $this->controller->current_method . '.php' );
 			}
 		}
 

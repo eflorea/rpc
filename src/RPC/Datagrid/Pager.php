@@ -45,7 +45,7 @@ class Pager
 	 */
 	public function __construct()
 	{
-		$request = Request::getInstance();
+		$request = \RPC\HTTP\Request::getInstance();
 
 		$page = @$request->get['page'];
 		$this->setCurrent( (int)$page );
@@ -149,7 +149,7 @@ class Pager
 		
 		$html  = '<div class="pagination">';
 		
-		$request = RPC\HTTP\Request::getInstance();
+		$request = \RPC\HTTP\Request::getInstance();
 		$uri     = $request->getPathInfo();
 		$query   = $request->get;
 		

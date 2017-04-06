@@ -2,17 +2,18 @@
 
 namespace RPC\View\Filter;
 
+use RPC\Regex;
 use RPC\View\Filter;
 
-class Datagrid extends Filter;
+class Datagrid extends Filter
 {
 
 	protected $filters = array();
 	
 	public function __construct()
 	{
-		$this->addFilter( new \RPC\View\Filter\Form\Field\Pass() );
-		$this->addFilter( new \RPC\View\Filter\Form\Field\Text() );
+		$this->addFilter( new \RPC\View\Filter\Datagrid\Sort() );
+		$this->addFilter( new \RPC\View\Filter\Datagrid\Pagination() );
 	}
 
 	public function addFilter( $filter )
@@ -30,7 +31,7 @@ class Datagrid extends Filter;
 			}
 		}
 
-		$regex  = new RPC_Regex( '/(<.*?)datagrid="([^"]+)"(.*?(?<!\?)>)/' );
+		$regex  = new \RPC\Regex( '/(<.*?)datagrid="([^"]+)"(.*?(?<!\?)>)/' );
 		$source = $regex->replace( $source, '$1$3<?php $_rpc_view_datagrid = $$2; ?>' );
 				
 		return $source;
