@@ -82,6 +82,18 @@ class Statement
 		
 		$res = $this->stmt->execute( $params );
 		
+		$sql = $this->sql;
+
+		foreach( $params as $param )
+		{
+			$sql = preg_replace( '/\?/', "'" . $param . "'", $sql, 1 );
+		}
+		
+		if( defined( 'DEBUG_QUERIES' ) )
+		{
+			$this->db->queries[] = $sql;
+		}
+		
 		\RPC\Signal::emit( array( '\RPC\Db', 'query_end' ), array( $this->sql, 'prepared' ) );
 		
 		if( $res )

@@ -370,64 +370,69 @@ abstract class MySQL extends Adapter
 
 		if( ! isset( $args[0] ) )
 		{
-			return false;
-		}
-
-		$condition_values = array();
-
-		if( is_array( $args[0] ) )
-		{
-			$condition = array();
-			foreach( $args[0] as $k => $r )
-			{
-				$condition[] = " " . $k . " = ? ";
-				$condition_values[] = $r;
-			}
-			$condition = implode( ' and ', $condition );
-		}
-		else
-		{
-			$condition = $args[0];
-
-			//check if ? exists in condition
-			if( strpos( $condition, "?" ) === false )
-			{
-				$condition .= " = ? ";
-			}
-
-			if( isset( $args[1] ) )
-			{
-				if( is_array( $args[1] ) )
-				{
-					$condition_values = $args[1];
-				}
-				else
-				{
-					$condition_values[] = $args[1];
-				}
-			}
-			elseif( is_numeric( $args[0] ) )
-			{
-				$condition = " " . $this->getPkField() . " = ? ";
-				$condition_values[] = $args[0];
-			}
-		}
-
-		$fields = $this->getFields();
-
-		$sql = 'select * from `' . $this->getName() . '` where '
-		     . $condition . ' limit 1';
-		if( count( $condition_values ) )
-		{
-			$res = $this->getDb()->prepare( $sql )->execute( $condition_values );
-		}
-		else
-		{
+			$sql = 'select * from `' . $this->getName() . '` limit 10000';
 			$res = $this->getDb()->query( $sql );
 		}
+		else
+		{
+			$condition_values = array();
+
+			if( is_array( $args[0] ) )
+			{
+				$condition = array();
+				foreach( $args[0] as $k => $r )
+				{
+					$condition[] = " " . $k . " = ? ";
+					$condition_values[] = $r;
+				}
+				$condition = implode( ' and ', $condition );
+			}
+			else
+			{
+				$condition = $args[0];
+
+				//check if ? exists in condition
+				if( strpos( $condition, "?" ) === false )
+				{
+					$condition .= " = ? ";
+				}
+
+				if( isset( $args[1] ) )
+				{
+					if( is_array( $args[1] ) )
+					{
+						$condition_values = $args[1];
+					}
+					else
+					{
+						$condition_values[] = $args[1];
+					}
+				}
+				elseif( is_numeric( $args[0] ) )
+				{
+					$condition = " " . $this->getPkField() . " = ? ";
+					$condition_values[] = $args[0];
+				}
+			}
+
+			$sql = 'select * from `' . $this->getName() . '` where '
+			     . $condition . '';
+			if( count( $condition_values ) )
+			{
+				$res = $this->getDb()->prepare( $sql )->execute( $condition_values );
+			}
+			else
+			{
+				$res = $this->getDb()->query( $sql );
+			}
+		}
+
+
 
 		if( count( $res ) )
 		{
+			$fields = $this->getFields();
+
 			$output = array();
 
 			foreach( $res as $row )
@@ -445,7 +450,7 @@ abstract class MySQL extends Adapter
 					}
 				}
 
-				$output[] = $this->rowclass( $this, $row );
+				$output[] = new $this->rowclass( $this, $row );
 			}
 
 			return $output;

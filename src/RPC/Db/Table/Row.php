@@ -753,9 +753,17 @@ class Row implements ArrayAccess
 	public function save()
 	{
 		$pk = $this->getPk();
-		( empty( $pk )|| ( isset( $this->force_pk ) && $this->force_pk ) ) ? $this->getTable()->insert( $this ) : $this->getTable()->update( $this );
+		if( empty( $pk )|| ( isset( $this->force_pk ) && $this->force_pk ) )
+		{
+			$this->getTable()->insert( $this );
+		}
+		else
+		{
+			$this->getTable()->update( $this );
+		}
 
 		$this->clean = $this->row;
+		$this->changedfields = array();
 		$this->setDirty( false );
 	}
 

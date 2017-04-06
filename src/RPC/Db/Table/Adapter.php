@@ -611,6 +611,11 @@ abstract class Adapter
 		return true;
 	}
 
+	public function lastQuery( $show_all = false )
+	{
+		return $this->getDb()->getQueries( $show_all );
+	}
+
 }
 
 ?>

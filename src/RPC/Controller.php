@@ -50,6 +50,11 @@ class Controller
 		return $this->request->getParam( $name, $default );
 	}
 
+	public function redirect( $url )
+	{
+		return $this->response->redirect( $url );
+	}
+
 
 	/**
 	 * Assigns a variable which will be available in the templates

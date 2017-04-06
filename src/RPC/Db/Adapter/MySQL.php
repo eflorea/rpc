@@ -145,6 +145,7 @@ class MySQL extends Adapter
 	{
 		return new \RPC\Db\Statement( $sql, $options, $this );
 	}
+
 	
 }
 

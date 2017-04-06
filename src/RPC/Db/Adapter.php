@@ -42,6 +42,8 @@ abstract class Adapter
 	 */
 	protected $_rpc_affectedrows = 0;
 
+	public $queries = array();
+
 	/**
 	 * Tries to connect to the database, throwing an exception if it fails
 	 *
@@ -145,6 +147,11 @@ abstract class Adapter
 			return 0;
 		}
 
+		if( defined( 'DEBUG_QUERIES' ) )
+		{
+			$this->queries[] = $sql;
+		}
+
 		$this->_rpc_affectedrows = $this->getHandle()->exec( $sql );
 
 		\RPC\Signal::emit( array( '\RPC\Db', 'query_end' ), array( $sql, 'statement' ) );
@@ -166,7 +173,10 @@ abstract class Adapter
 			return null;
 		}
 
-		$this->_queries[] = $sql;
+		if( defined( 'DEBUG_QUERIES' ) )
+		{
+			$this->queries[] = $sql;
+		}
 
 		$res = $this->getHandle()->query( $sql, $this->getFetchMode() );
 
@@ -264,6 +274,16 @@ abstract class Adapter
 	public function __destruct()
 	{
 		$this->disconnect();
+	}
+
+
+	public function getQueries( $all = false )
+	{
+		if( ! defined( 'DEBUG_QUERIES' ) )
+		{
+			return 'DEBUG_QUERIES constant is not defined.';
+		}
+		return ( $all ? $this->queries : end( $this->queries ) );
 	}
 
 }
