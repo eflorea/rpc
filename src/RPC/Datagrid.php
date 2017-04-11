@@ -205,7 +205,7 @@ class Datagrid
 	 * 
 	 * @return RPC_Datagrid
 	 */
-	public function setInitialSortBy( $sort, $order = '' )
+	public function initialSortBy( $sort, $order = '' )
 	{
 		if( $order )
 		{

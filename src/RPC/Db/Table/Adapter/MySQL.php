@@ -10,7 +10,7 @@ use RPC\Db\Table\Adapter;
  *
  * @package Db
  */
-abstract class MySQL extends Adapter
+class MySQL extends Adapter
 {
 	/**
 	 * @todo Use a cache
@@ -68,8 +68,38 @@ abstract class MySQL extends Adapter
 		{
 			return $t->getDb()->prepare( $sql )->execute( $condition_values );
 		}
-
+	
 		return $t->getDb()->query( $sql );
+	}
+
+	public static function execute()
+	{
+		$args = func_get_args();
+
+		$sql = $args[0];
+		$condition_values = array();
+
+		if( isset( $args[1] ) )
+		{
+			if( is_array( $args[1] ) )
+			{
+				$condition_values = $args[1];
+			}
+			else
+			{
+				$condition_values[] = $args[1];
+			}
+		}
+
+		$t = get_called_class();
+		$t = new $t( null, true );
+
+		if( $condition_values )
+		{
+			return $t->getDb()->prepare( $sql )->execute( $condition_values );
+		}
+	
+		return $t->getDb()->execute( $sql );
 	}
 
 	public function get()
