@@ -59,6 +59,21 @@ class Controller
 		return $this->response->redirect( $url );
 	}
 
+	public function json( $data = array() )
+	{
+		return $this->response->json( $data );
+	}
+
+	public function jsonSuccess( $data = array() )
+	{
+		return $this->response->jsonSuccess( $data );
+	}
+
+	public function jsonError( $error_message = '', $data = array() )
+	{
+		return $this->response->jsonError( $error_message, $data );
+	}
+
 
 	/**
 	 * Assigns a variable which will be available in the templates
