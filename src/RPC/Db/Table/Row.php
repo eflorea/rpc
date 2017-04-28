@@ -755,16 +755,18 @@ class Row implements ArrayAccess
 		$pk = $this->getPk();
 		if( empty( $pk )|| ( isset( $this->force_pk ) && $this->force_pk ) )
 		{
-			$this->getTable()->insert( $this );
+			$saved = $this->getTable()->insert( $this );
 		}
 		else
 		{
-			$this->getTable()->update( $this );
+			$saved = $this->getTable()->update( $this );
 		}
 
 		$this->clean = $this->row;
 		$this->changedfields = array();
 		$this->setDirty( false );
+
+		return $saved;
 	}
 
 	/**
@@ -840,6 +842,34 @@ class Row implements ArrayAccess
 				throw new \Exception( "Field $name doesn't exist on the row object" );
 			}
 		}
+    }
+
+
+    public function getData()
+    {
+    	$data = array();
+
+    	$fields = $this->getFields();
+
+    	if( $fields )
+    	{
+	    	foreach( $this->getFields() as $field )
+	    	{
+	    		$data[$field] = $this[$field];
+	    	}
+	    }
+
+	    $extra_fields = $this->getExtraFields();
+
+	    if( $extra_fields )
+	    {
+	    	foreach( $extra_fields as $field => $value )
+	    	{
+	    		$data[$field] = $this[$field];
+	    	}
+	    }
+
+    	return $data;
     }
 
 }

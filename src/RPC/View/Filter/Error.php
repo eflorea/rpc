@@ -8,51 +8,50 @@ use RPC\Regex;
 /**
  * Transforms code like <code><error src="username"><p class="error">Invalid username</p></error></code>
  * into <code><?php if( ! empty( $this->errors->get( "username" ) ): ?><p>class="error"><?php echo $this->errors->get( "username" ); ?></p><?php endif; ?></code>
- * 
+ *
  * @package View
  */
 class Error extends Filter
 {
-	
+
 	/**
 	 * Array of errors set throughout the script
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $_view_errors = array();
-	
-	protected $error_format = '<div class="has-error" id="error-{id}"><span class="help-block">{message}</span></div>';
-	
+
+	protected $error_format = '<div class="has-error {class}" id="error-{id}"><span class="help-block">{message}</span></div>';
+
 	/**
 	 * Replaces all error tag occurences with the necessary PHP code
-	 * 
+	 *
 	 * @param string $source
-	 * 
+	 *
 	 * @return string
 	 */
 	public function filter( $source )
 	{
-		$regex = new \RPC\Regex( '/<error id="([a-zA-Z0-9_\-]+)"><\/error>/' );
-	
+		$regex = new \RPC\Regex( '/<error id="([a-zA-Z0-9_\-]+)"(.*)?(?<!\?)><\/error>/' );
 		if( $regex->match( $source, $matches ) )
 		{
-
 			foreach( $matches as $match )
 			{
+				$class = str_replace( array( '"', 'class=' ), '', trim( @$match[2][0] ) );
 				$php  = '<?php if( $view->getError( \'' . $match[1][0] . '\' ) ): ?>';
-				$php .= str_replace( array( '{id}', '{message}' ), array( $match[1][0], '<?php echo $view->getError( "' . $match[1][0] . '" ) ?>' ), $this->error_format );
+				$php .= str_replace( array( '{class}', '{id}', '{message}' ), array( $class, $match[1][0], '<?php echo $view->getError( "' . $match[1][0] . '" ) ?>' ), $this->error_format );
 				$php .= '<?php endif ?>';
-				
+
 				$source = str_replace( $match[0][0], $php, $source );
 			}
 		}
-		
+
 		return $source;
 	}
-	
+
 	/**
 	 * Sets an error for a specified field
-	 * 
+	 *
 	 * @param string $error
 	 * @param string $value
 	 */
@@ -70,19 +69,19 @@ class Error extends Filter
 			$this->_view_errors[$error] = $value;
 		}
 	}
-	
+
 	/**
 	 * Retrives the specified error from the object
-	 * 
+	 *
 	 * @param string $error
-	 * 
+	 *
 	 * @return string
 	 */
 	public function get( $error )
 	{
 		return $this->_view_errors[$error];
 	}
-	
+
 	/**
 	 * Shortcut for self::set
 	 *
@@ -93,7 +92,7 @@ class Error extends Filter
 	{
 		$this->set( $error, $value );
 	}
-	
+
 	/**
 	 * Shortcut for self::get
 	 *
@@ -103,29 +102,29 @@ class Error extends Filter
 	{
 		return $this->get( $error );
 	}
-	
+
 	/**
 	 * Allows for checking if an error exists using isset
-	 * 
+	 *
 	 * @param string $error
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function __isset( $error )
 	{
 		return array_key_exists( $error, $this->_view_errors );
 	}
-	
+
 	/**
 	 * Checks to see if there are any errors set
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function exist()
 	{
 		return count( $this->_view_errors ) ? true : false;
 	}
-	
+
 }
 
 ?>

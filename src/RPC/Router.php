@@ -21,7 +21,7 @@ class Router
 
 	protected $params;
 
-	
+
 	public function __construct()
 	{
 		$this->controller 	= 'Home';
@@ -40,14 +40,14 @@ class Router
 
 	public function run()
 	{
-		$uri = strtolower( trim( $this->request->getURI(), '/' ) );		
-		
+		$uri = strtolower( trim( $this->request->getURI(), '/' ) );
+
 		/**
 		 * If the requested URI does not have a path info, then the default
 		 * command and action will be returned
 		 */
 		if( $uri && $this->rewrite_rules )
-		{			
+		{
 			/**
 			 * If the string has some GET parameters, they will be ignored during
 			 * the routing process
@@ -60,13 +60,13 @@ class Router
 			foreach( $this->rewrite_rules as $rule => $arr )
 			{
 				$matches = array();
-				
+
 				$regex = new \RPC\Regex( '#' . str_replace( '#', '\#', $rule ) . '#' );
 
 				if( $regex->match( $uri, $matches ) )
 				{
 					$l = count( $matches[0] );
-					
+
 					if( $l == 1 )
 					{
 						$uri = $arr;
@@ -78,10 +78,10 @@ class Router
 							$replace[] = $matches[0][$i][0];
 							$search[]  = '$' . $i;
 						}
-						
+
 						$uri = str_replace( $search, $replace, $arr );
 					}
-				
+
 					break;
 				}
 			}
@@ -93,7 +93,7 @@ class Router
 			if( strpos( $uri, '/params' ) !== false )
 			{
 				list( $uri, $params ) = explode( '/params', $uri );
-				
+
 				$params = explode( '/', substr( $params, 1 ) );
 				for( $i = 0, $l = count( $params ); $i < $l; $i += 2 )
 				{
@@ -102,7 +102,7 @@ class Router
 			}
 
 			$uri = trim( $uri, '/' );
-			
+
 			if( $uri )
 			{
 				$cmdparts = explode( '/', $uri );
@@ -135,31 +135,31 @@ class Router
 		{
 			throw new \Exception( 'Class "' . ( is_object( $command ) ? get_class( $command ) : $command ) . '" has to inherit from RPC_Command' );
 		}
-		
+
 		if( ! in_array( $_SERVER['REQUEST_METHOD'], array( 'GET', 'POST', 'PUT' ) ) )
 		{
 			throw new \Exception( 'Request Method is not valid: ' . $_SERVER['REQUEST_METHOD'] );
 		}
 
 		$request = $_SERVER['REQUEST_METHOD'];
-		
+
 
 		$methodname = $this->action . $request;
-		
+
 		if( ! is_callable( array( $command, $methodname ), false ) )
 		{
 			throw new \Exception( 'Class "' . get_class( $command ) . '" was found but method "' . $methodname . '" could not be executed' );
 		}
-		
+
 		/*
 		$command->setParams( $this->getRouter()->getParams() );
-		
+
 		/*
 			Methods are called depending on the request type - the type
 			name is appended to the method name:
 				editGET
 				editPOST
-			
+
 			Also, if a method having "setup" appended to its name exists and/or
 			one having "teardown" appended, it will be executed before,
 			respectively after, either GET or POST methods:
@@ -171,11 +171,11 @@ class Router
 		/*
 			Validate CSRF
 			- default it will validate POST method
-			- if called like validateCSRT( 'get' ) it will validate the CSRF from get
+			- if called like validateCSRF( 'get' ) it will validate the CSRF from get
 		*/
 		if( ! isset( $command->ignore_csrf ) )
 		{
-			//$request->validateCSRF();
+			$this->request->validateCSRF();
 		}
 
 		$command->request  = $this->request;
@@ -185,23 +185,25 @@ class Router
 		$command_name = get_class( $command );
 		$command_name = explode( '\\', $command_name );
 		$command->current_controller = strtolower( end( $command_name ) );
-		
+
 		if( is_callable( array( $command, 'setup' ), false ) )
 		{
 			$command->setup( $this->request, $this->response );
 		}
-		
+
 		if( is_callable( array( $command, $this->action . 'Setup' ), false ) )
 		{
 			$command->{$this->action . 'Setup'}( $this->request, $this->response );
 		}
-		
+
 		$command->$methodname( $this->request, $this->response );
-		
+
 		if( is_callable( array( $command, $this->action . 'Teardown' ), false ) )
 		{
 			$command->{$this->action . 'Teardown'}( $this->request, $this->response );
 		}
+
+		$command->getView()->flash = $command->flash();
 
 		if( ! $command->template )
 		{

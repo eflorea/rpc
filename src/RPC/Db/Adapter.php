@@ -42,6 +42,7 @@ abstract class Adapter
 	 */
 	protected $_rpc_affectedrows = 0;
 
+
 	public $queries = array();
 
 	/**
@@ -285,6 +286,7 @@ abstract class Adapter
 		}
 		return ( $all ? $this->queries : end( $this->queries ) );
 	}
+
 
 }
 

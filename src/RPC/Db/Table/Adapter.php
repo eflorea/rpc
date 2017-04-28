@@ -178,20 +178,31 @@ abstract class Adapter
 			if( $table_name )
 			{
 				$this->force_table_name = $table_name;
-				$this->model_name = $table_name;
+
+				if( ! $this->model_name )
+				{
+					$this->model_name = $table_name;
+				}
 			}
 
 			$this->setDb( \RPC\Db::factory() );
-
 
 			if( ! $this->force_table_name )
 			{
 				$classname = get_class( $this );
 				$classname = explode( '\\', trim( $classname, '\\' ) );
 
-				$this->model_name = end( $classname );
+				if( ! $this->model_name )
+				{
+					$this->model_name = end( $classname );
+					$classrow = $this->rowclass . '\\' . $this->model_name;
+				}
+				else
+				{
+					$classrow = $this->rowclass . '\\' . end( $classname );
+				}
 
-				$classrow = $this->rowclass . '\\' . $this->model_name;
+				$classrow = str_replace( '_', '', $classrow );
 
 				if( class_exists( $classrow ) )
 				{
@@ -201,7 +212,7 @@ abstract class Adapter
 			else
 			{
 				$classrow = $this->rowclass . '\\' . $this->model_name;
-
+				$classrow = str_replace( '_', '', $classrow );
 				if( class_exists( $classrow ) )
 				{
 					$this->rowclass = $classrow;

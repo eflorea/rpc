@@ -18,7 +18,7 @@ class Controller
 	public $response;
 
 	public function display( $template = null )
-	{	
+	{
 		$this->template = $template;
 		$this->getView()->display( $template );
 	}
@@ -33,12 +33,14 @@ class Controller
 
 			$this->vars['current_method'] 		= $this->current_method;
 			$this->vars['current_controller'] 	= $this->current_controller;
+			$this->vars['csrf_token']			= \RPC\Util::csrf();
 
 			$view->setVars( $this->vars );
 
+
 			Registry::set( 'view', $view );
 		}
-		
+
 		return Registry::get( 'view' );
 	}
 
@@ -59,6 +61,7 @@ class Controller
 		return $this->response->redirect( $url );
 	}
 
+
 	public function json( $data = array() )
 	{
 		return $this->response->json( $data );
@@ -74,10 +77,9 @@ class Controller
 		return $this->response->jsonError( $error_message, $data );
 	}
 
-
-	/**
+/**
 	 * Assigns a variable which will be available in the templates
-	 * 
+	 *
 	 * @param string $var
 	 * @param mixed  $value
 	 */
@@ -87,21 +89,50 @@ class Controller
 		{
 			throw new \Exception( 'You are trying to assign a value on an attribute which is reserved to a template name' );
 		}
-		
+
 		$this->vars[$var] = $value;
 	}
-	
+
 	/**
 	 * Returns an assigned variable or null if the variable does not exist
-	 * 
+	 *
 	 * @param string $var
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function __get( $var )
 	{
 		return isset( $this->vars[$var] ) ? $this->vars[$var] : null;
 	}
+
+	public function flash()
+    {
+    	@list( $message, $message_type, $persistent ) = func_get_args();
+
+    	if( $message )
+    	{
+    		$_SESSION['_FLASH_'][] = array( 'message' => $message, 'message_type' => $message_type, 'persistent' => ( $persistent ? 1 : 0 ) );
+    	}
+    	else
+    	{
+    		$messages = array();
+
+	        if( isset( $_SESSION['_FLASH_'] ) )
+	        {
+	            foreach( $_SESSION['_FLASH_'] as $index => $message )
+	            {
+	                if ( ! $message['persistent'] )
+	                {
+	                    unset( $_SESSION['_FLASH_'][$index] );
+	                }
+	                $messages[] = $message;
+	            }
+	        }
+
+	        return $messages;
+    	}
+    }
+
 
 }
 

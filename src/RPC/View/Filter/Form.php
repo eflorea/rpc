@@ -19,7 +19,7 @@ use RPC\View\Filter\Form\Field\Select;
 /**
  * Finds forms in the source and adds a line of code which will set the method
  * for the current form
- * 
+ *
  * @package View
  */
 class Form extends Filter
@@ -28,7 +28,7 @@ class Form extends Filter
 	protected $filters = array();
 	protected $request;
 	protected $method;
-	
+
 	/**
 	 * Class Constructor which adds some filters which are part of the form
 	 */
@@ -43,15 +43,15 @@ class Form extends Filter
 		$this->addFilter( new \RPC\View\Filter\Form\Field\Checkbox() );
 		$this->addFilter( new \RPC\View\Filter\Form\Field\Textarea() );
 		$this->addFilter( new \RPC\View\Filter\Form\Field\Select() );
-		
-		 
+
+
 	}
 
 	public function addFilter( $filter )
 	{
 		$this->filters[] = $filter;
 	}
-	
+
 	/**
 	 * Finds forms in the source and adds a line of code which will set the method
 	 * for the current form
@@ -59,9 +59,9 @@ class Form extends Filter
 	 * <code><form method="post" action="/path/to/action" class="example"></code>
 	 * will become
 	 * <code><form method="post" action="/path/to/action" class="example"><?php $form->setMethod( 'post' ); ?></code>
-	 * 
+	 *
 	 * @param string $source
-	 * 
+	 *
 	 * @return string
 	 */
 	public function filter( $source )
@@ -75,17 +75,17 @@ class Form extends Filter
 		}
 
 		$regex  = new \RPC\Regex( '/<form.*?method="([^"]+)".*?(?<!\?)>/' );
-		
-		$source = $regex->replace( $source, '${0}<?php $form = new \RPC\View\Filter\Form; ?><?php $form->setMethod( \'${1}\' ); ?><input type="hidden" name="csrf_token" value="">' );
-		
+		$csrf_token = \RPC\Registry::get('csrf_token');
+		$source = $regex->replace( $source, '${0}<?php $form = new \RPC\View\Filter\Form; ?><?php $form->setMethod( \'${1}\' ); ?><input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">' );
+
 		//$source = parent::filter( $source );
-		
+
 		return $source;
 	}
 
-	
-	
-	
+
+
+
 	public function setMethod( $method )
 	{
 		$method = strtolower( $method );
@@ -94,16 +94,16 @@ class Form extends Filter
 		{
 			throw new \Exception( 'Method can only be GET or POST' );
 		}
-		
+
 		$this->method = strtolower( $method );
 	}
-	
+
 	public function text( $name, $value = '' )
 	{
 		return $this->escape( $this->isSubmitted() ? $this->getValue( $name ) : $value );
 	}
-	
-	
+
+
 	public function hidden( $name, $value = '' )
 	{
 		if( $name == 'csrf_token' )
@@ -112,7 +112,7 @@ class Form extends Filter
 		}
 		return $this->escape( $this->isSubmitted() ? $this->getValue( $name ) : $value );
 	}
-	
+
 	public function checkbox( $name, $value = 1, $checked = false )
 	{
 		if( $this->isSubmitted() )
@@ -141,7 +141,7 @@ class Form extends Filter
 		}
 		return '';
 	}
-	
+
 	public function radio( $name, $value, $checked = false )
 	{
 		if( $this->isSubmitted() )
@@ -155,10 +155,10 @@ class Form extends Filter
 		{
 			return ' checked="checked" ';
 		}
-		
+
 		return '';
 	}
-	
+
 	public function textarea( $name, $value = '' )
 	{
 		return $this->escape( $this->isSubmitted() ? $this->getValue( $name ) : $value );
@@ -180,7 +180,7 @@ class Form extends Filter
 					foreach( $v as $k1 => $v1 )
 					{
 						$options .= '<option value="' . $this->escape( $k1 ) . '"';
-						
+
 						if( substr( $name, -2 ) == '[]' )
 						{
 							if( in_array( $k1, $selected ) )
@@ -195,7 +195,7 @@ class Form extends Filter
 								$options .= ' selected="selected"';
 							}
 						}
-						
+
 						$options .= '>' . $this->escape( $v1 ) . '</option>';
 					}
 					$options .= '</optgroup>';
@@ -214,15 +214,15 @@ class Form extends Filter
 					else
 					{
 						// problem with == because '' (the default value for selected) is equal to 0 (usual value as key in source arrays)
-						
+
 						if( $k == $selected &&
 						    @strlen( $k ) == @strlen( $selected ) ||
-						    ( is_array( $selected ) && in_array( $k, $selected ) ) ) 
+						    ( is_array( $selected ) && in_array( $k, $selected ) ) )
 						{
 							$options .= ' selected="selected"';
 						}
 					}
-					
+
 					$options .= '>' . $this->escape( $v ) . '</option>';
 				}
 			}
@@ -230,16 +230,16 @@ class Form extends Filter
 
 		return $options;
 	}
-	
+
 	public function getValue( $name )
 	{
 		$m = $this->method;
-		
+
 		if( strpos( $name, '[' ) === false )
 		{
 			return @$this->request->{$m}[$name];
 		}
-		
+
 		if( substr( $name, -2 ) == '[]' )
 		{
 			$name = substr( $name, 0, -2 );
@@ -249,12 +249,12 @@ class Form extends Filter
 		{
 			$defaultreturn = '';
 		}
-		
+
 		$name = "['" . implode( "']['", explode( '[', str_replace( ']', '', $name ) ) ) . "']";
 		$val = eval( 'return @$this->request->' . $m . $name . ';' );
 		return empty( $val ) ? $defaultreturn : $val;
 	}
-	
+
 	public function isSubmitted()
 	{
 		//check if we have token
@@ -262,16 +262,16 @@ class Form extends Filter
 		{
 			return $this->request->getMethod() == 'post';
 		}
-		
+
 		$arr = $this->request->getQueryString();
 		return ! empty( $arr );
 	}
-	
+
 	public function escape( $str )
 	{
 		return htmlentities( $str, ENT_QUOTES, 'UTF-8', false );
 	}
-	
+
 }
 
 ?>
