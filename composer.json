@@ -11,7 +11,8 @@
     "require": {
         "php": ">=5.4.0",
         "vlucas/phpdotenv": "2.*",
-        "filp/whoops": "2.*"
+        "filp/whoops": "2.*",
+        "kint-php/kint": "2.*"
     },
     "require-dev" : {
         "php": ">=5.4.0"
