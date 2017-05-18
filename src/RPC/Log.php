@@ -27,25 +27,20 @@ class Log {
 	 */
 	function __construct()
 	{
-		if ( Registry::registered('config') &&
-			 isset( Registry::get( 'config' )['log'] ) )
-		{
-			$config = Registry::get( 'config' )['log'];
-		}
-		else
+		if( ! getenv( 'LOGS_ENABLED' ) )
 		{
 			$this->_enabled = false;
 			return false;
 		}
 
-		if ( ! $config['log_to_file'] )
+		if ( ! getenv( 'LOG_TO_FILE' ) )
 		{
 			$this->_log_to_file = false;
 		}
 
-		if ( ! empty( $this->log_path ) )
+		if ( getenv( 'LOG_PATH' ) )
 		{
-			$this->log_path = $config['log_path'];
+			$this->log_path = getenv( 'LOG_PATH' );
 		}
 		else
 		{
@@ -58,14 +53,14 @@ class Log {
 			$this->_enabled = false;
 		}
 
-		if (is_numeric($config['log_threshold']))
+		if( getenv( "LOG_THRESHOLD" ) )
 		{
-			$this->_threshold = $config['log_threshold'];
+			$this->_threshold = getenv( "LOG_THRESHOLD" );
 		}
 
-		if ($config['log_date_format'] != '')
+		if( getenv( "LOG_DATE_FORMAT" ) )
 		{
-			$this->_date_fmt = $config['log_date_format'];
+			$this->_date_fmt = getenv( "LOG_DATE_FORMAT" );
 		}
 	}
 

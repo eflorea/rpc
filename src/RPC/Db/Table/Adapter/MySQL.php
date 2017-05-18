@@ -768,7 +768,7 @@ class MySQL extends Adapter
 
 	public function cacheQuery( $sql, $seconds )
 	{
-		$filename = PATH_CACHE . '/sql_' . md5( $sql );
+		$filename = CACHE_PATH . '/sql_' . md5( $sql );
 		if( is_readable( $filename ) &&
 		    ( time() - filemtime( $filename ) ) < $seconds )
 		{

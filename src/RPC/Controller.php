@@ -28,7 +28,7 @@ class Controller
 	{
 		if( ! Registry::registered( 'view' ) )
 		{
-			$view = new \RPC\View( PATH_APP  . '/View', new Cache( PATH_CACHE . '/view' ) );
+			$view = new \RPC\View( APP_PATH  . '/View', new Cache( CACHE_PATH . '/view' ) );
 			$view->setController( $this );
 
 			$this->vars['current_method'] 		= $this->current_method;

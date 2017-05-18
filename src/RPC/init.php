@@ -8,14 +8,14 @@ $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
 $whoops->register();
 
 //set some default constants if they aren't defined
-if( ! defined( 'PATH_APP' ) )
+if( ! defined( 'APP_PATH' ) )
 {
-	define( 'PATH_APP', PATH_ROOT . '/APP' );
+	define( 'APP_PATH', ROOT_PATH . '/APP' );
 }
 
-if( ! defined( 'PATH_CACHE' ) )
+if( ! defined( 'CACHE_PATH' ) )
 {
-	define( 'PATH_CACHE', PATH_ROOT . '/tmp/cache' );
+	define( 'CACHE_PATH', ROOT_PATH . '/tmp/cache' );
 }
 
 /**

@@ -135,38 +135,7 @@ class Util
 
 		return $options;
 	}
-	/**
-	 * A possible implementation of autoload. It also adds, if not already
-	 * added, the current directory to the include path.
-	 *
-	 * The function will check (only the first time it is run) if the
-	 * include_path contains the current directory and if not it will add it.
-	 * After that it will try to include a file named like the given parameter
-	 * but with "_" characters converted to "/".
-	 *
-	 * @param string $classname Name of the class that we will try to load
-	 *
-	 * @todo it should be able to receive a number of directories so that it
-	 * can search in more than one directory
-	 */
-	public static function autoload( $classname )
-	{
-		if( empty( $GLOBALS['_RPC_']['autoload']['firstrun'] ) )
-		{
-			$GLOBALS['_RPC_']['autoload']['firstrun'] = true;
-
-			$rpcpath = realpath( dirname( __FILE__ ) . '/..' );
-
-			$paths = explode( PATH_SEPARATOR, get_include_path() );
-
-			if( ! in_array( $rpcpath, $paths ) )
-			{
-				set_include_path( get_include_path() . PATH_SEPARATOR . $rpcpath );
-			}
-		}
-
-		require str_replace( '_', '/', $classname ) . '.php';
-	}
+	
 
 	/**
 	 * Generates a password according to the type given. Actually the function
@@ -303,7 +272,7 @@ class Util
 
 	public static function csrf()
 	{
-		$filename = PATH_CACHE . '/' . 'csrf_token.txt';
+		$filename = CACHE_PATH . '/' . 'csrf_token.txt';
 
 		if( is_readable( $filename ) &&
 		    ( time() - filemtime( $filename ) ) < ( 3600* 48 ) )
