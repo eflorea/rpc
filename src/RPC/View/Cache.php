@@ -2,6 +2,8 @@
 
 namespace RPC\View;
 
+use \Exception;
+
 /**
  * Implements a basic caching mechanism for views
  * 
@@ -35,20 +37,18 @@ class Cache
 	 * @return RPC_View_Cache
 	 */
 	public function setDirectory( $path )
-	{
-		$path = realpath( $path );
-		
+	{		
 		if( ! is_dir( $path ) )
 		{
-			throw new Exception( $path . ' is not a directory' );
+			mkdir( $path, 0777, true );
 		}
 		
 		if( ! is_writable( $path ) )
 		{
-			throw new Exception( $path . ' must be writeable' );
+			chmod( $path, 0777 );
 		}
 		
-		$this->directory = $path;
+		$this->directory = realpath( $path );
 		
 		return $this;
 	}
@@ -72,7 +72,7 @@ class Cache
 	 */
 	public function get( $file, $template_name )
 	{
-		$template_name = preg_replace( '/[^a-zA-Z]/', '_', $template_name );
+		$template_name = preg_replace( '/[^a-zA-Z]/', '_', str_replace( '.php', '', $template_name ) );
 		$path = $this->getPathForFile( $file, $template_name );
 
 		if( ! file_exists( $path ) )
@@ -113,7 +113,7 @@ class Cache
 	 */
 	protected function getPathForFile( $file, $nice_name )
 	{
-		return $this->getDirectory() . DIRECTORY_SEPARATOR . 'view_' . $nice_name .  '_' . md5( $file ) . '.php';
+		return $this->getDirectory() . DIRECTORY_SEPARATOR . $nice_name .  '_' . md5( $file ) . '.php';
 	}
 	
 	/**
@@ -126,29 +126,14 @@ class Cache
 	 */
 	public function set( $file, $content, $template_name )
 	{
-		$template_name = preg_replace( '/[^a-zA-Z]/', '_', $template_name );
+		$template_name = preg_replace( '/[^a-zA-Z]/', '_', str_replace( '.php', '', $template_name ) );
 
 		if( ! file_put_contents( $this->getPathForFile( $file, $template_name ), $content ) )
 		{
-			throw new Exception( 'Cannot write cached version of template "' . $file  . '" to "' . $this->getPathForFile( $file, $template_name ) . '"' );
+			throw new \Exception( 'Cannot write cached version of template "' . $file  . '" to "' . $this->getPathForFile( $file, $template_name ) . '"' );
 		}
 
 		return $this;
-	}
-
-	/**
-	 * Removes all cache files from the set directory
-	 */
-	public function removeCacheFiles()
-	{
-		foreach( new DirectoryIterator( $this->getDirectory() ) as $entry )
-		{
-			if( $entry->isFile() &&
-			    strpos( $entry->getPathName(), 'rpc_view_cache_' ) !== false )
-			{
-				@unlink( $entry->getPathName() );
-			}
-		}
 	}
 	
 }

@@ -148,7 +148,7 @@ abstract class Adapter
 			return 0;
 		}
 
-		if( defined( 'DEBUG_QUERIES' ) )
+		if( getenv( 'DEBUG_QUERIES' ) )
 		{
 			$this->queries[] = $sql;
 		}
@@ -174,7 +174,7 @@ abstract class Adapter
 			return null;
 		}
 
-		if( defined( 'DEBUG_QUERIES' ) )
+		if( getenv( 'DEBUG_QUERIES' ) )
 		{
 			$this->queries[] = $sql;
 		}
@@ -280,10 +280,6 @@ abstract class Adapter
 
 	public function getQueries( $all = false )
 	{
-		if( ! defined( 'DEBUG_QUERIES' ) )
-		{
-			return 'DEBUG_QUERIES constant is not defined.';
-		}
 		return ( $all ? $this->queries : end( $this->queries ) );
 	}
 
