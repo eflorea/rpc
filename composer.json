@@ -22,10 +22,5 @@
             "RPC": "src/"
         },
         "files": ["src/RPC/init.php"]
-    },
-    "autoload": {
-        "psr-0": {
-            "RPC": "src/"
-        }
     }
 }
