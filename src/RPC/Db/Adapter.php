@@ -43,8 +43,6 @@ abstract class Adapter
 	protected $_rpc_affectedrows = 0;
 
 
-	public $queries = array();
-
 	/**
 	 * Tries to connect to the database, throwing an exception if it fails
 	 *
@@ -150,7 +148,7 @@ abstract class Adapter
 
 		if( getenv( 'DEBUG_QUERIES' ) )
 		{
-			$this->queries[] = $sql;
+			$this->getHandle()->_queries[] = $sql;
 		}
 
 		$this->_rpc_affectedrows = $this->getHandle()->exec( $sql );
@@ -176,7 +174,7 @@ abstract class Adapter
 
 		if( getenv( 'DEBUG_QUERIES' ) )
 		{
-			$this->queries[] = $sql;
+			$this->getHandle()->_queries[] = $sql;
 		}
 
 		$res = $this->getHandle()->query( $sql, $this->getFetchMode() );
@@ -280,9 +278,12 @@ abstract class Adapter
 
 	public function getQueries( $all = false )
 	{
-		return ( $all ? $this->queries : end( $this->queries ) );
+		if( ! getenv( 'DEBUG_QUERIES' ) )
+		{
+			return 'DEBUG_QUERIES variable is not defined in .env file.';
+		}
+		return ( $all ? $this->getHandle()->_queries : end( $this->getHandle()->_queries ) );
 	}
-
 
 }
 

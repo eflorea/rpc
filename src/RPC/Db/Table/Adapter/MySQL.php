@@ -68,7 +68,7 @@ class MySQL extends Adapter
 		{
 			return $t->getDb()->prepare( $sql )->execute( $condition_values );
 		}
-
+	
 		return $t->getDb()->query( $sql );
 	}
 
@@ -98,7 +98,7 @@ class MySQL extends Adapter
 		{
 			return $t->getDb()->prepare( $sql )->execute( $condition_values );
 		}
-
+	
 		return $t->getDb()->execute( $sql );
 	}
 
@@ -177,6 +177,13 @@ class MySQL extends Adapter
 
 		if( ! isset( $args[0] ) )
 		{
+			$sql = "select * from `" . $this->getName() . "` limit 1000";
+			$res = $this->getDb()->query( $sql );
+			if( count( $res ) )
+			{
+				return $res;
+			}
+			
 			return null;
 		}
 
@@ -222,12 +229,6 @@ class MySQL extends Adapter
 
 		$sql = 'select * from `' . $this->getName() . '` where '
 		     . $condition . '';
-
-		if ( ! empty( $this->_order_by ) )
-		{
-			$sql .= ' ORDER BY ' . $this->order_by;
-		}
-
 		if( count( $condition_values ) )
 		{
 			$res = $this->getDb()->prepare( $sql )->execute( $condition_values );
@@ -400,92 +401,15 @@ class MySQL extends Adapter
 		return null;
 	}
 
-	// TODO: make this accept more orders
-	/*
-	perhaps
-	array(
-		array('column_name', 'direction'),
-		array('column_name', 'direction'),
-		array('column_name', 'direction')
-	)
-	*/
-	public function orderBy()
-	{
-		$args = func_get_args();
-
-		if( ! isset( $args[0] ) )
-		{
-			return false;
-		}
-
-	    if ( is_array( $args[0] ) )
-		{
-			$condition = array();
-
-			foreach( $args[0] as $k => $v )
-			{
-				if ( is_array( $v ) )
-				{
-					$key = key( $v );
-					$condition[] = key($v) . " " . $v[$key];
-				} else if ( is_numeric( $k ) )
-				{
-					if( stripos( $k, "ASC" ) === false && stripos( $k, "DESC" ) === false )
-					{
-						$condition[] .= $v . " ASC";
-					}
-					else
-					{
-						$condition[] = $v;
-					}
-				}
-				else
-				{
-					$condition[] = $k . " " . $v;
-				}
-			}
-
-			$condition = implode( ', ', $condition );
-
-		}
-		else
-		{
-			foreach ( $args as $arg )
-			{
-				$condition = $arg;
-
-				//check if asc/desc exists in condition
-				if( stripos( $arg, "ASC" ) === false && stripos( $arg, "DESC" ) === false )
-				{
-					$condition .= " ASC";
-				}
-
-				$conditions[] = $condition;
-			}
-
-			$condition = implode(', ', $conditions);
-
-		}
-
-		$this->getDb()->_order_by = $condition;
-		return $this;
-
-	}
-
 	public function findAll()
 	{
 		$args = func_get_args();
 
+
 		if( ! isset( $args[0] ) )
 		{
-			$sql = 'select * from `' . $this->getName() . '` ';
-			if ( ! empty( $this->getDb()->_order_by ) )
-			{
-				$sql .= ' ORDER BY ' . $this->getDb()->_order_by;
-			}
-			$sql .= 'LIMIT 10000';
+			$sql = 'select * from `' . $this->getName() . '` limit 10000';
 			$res = $this->getDb()->query( $sql );
-
 		}
 		else
 		{
@@ -531,12 +455,6 @@ class MySQL extends Adapter
 
 			$sql = 'select * from `' . $this->getName() . '` where '
 			     . $condition . '';
-
-			if ( ! empty( $this->getDb()->_order_by ) )
- 			{
- 				$sql .= ' ORDER BY ' . $this->getDb()->_order_by;
- 			}
-
 			if( count( $condition_values ) )
 			{
 				$res = $this->getDb()->prepare( $sql )->execute( $condition_values );
@@ -547,7 +465,7 @@ class MySQL extends Adapter
 			}
 		}
 
-		$this->getDb()->_order_by = NULL;
+
 
 		if( count( $res ) )
 		{
@@ -660,7 +578,7 @@ class MySQL extends Adapter
 					}
 				}
 
-				$output[] = new $this->rowclass( $this, $row );
+				$output[] = $this->rowclass( $this, $row );
 			}
 
 			return $output;
@@ -768,7 +686,7 @@ class MySQL extends Adapter
 
 	public function cacheQuery( $sql, $seconds )
 	{
-		$filename = CACHE_PATH . '/sql_' . md5( $sql );
+		$filename = PATH_CACHE . '/sql_' . md5( $sql );
 		if( is_readable( $filename ) &&
 		    ( time() - filemtime( $filename ) ) < $seconds )
 		{
@@ -792,17 +710,8 @@ class MySQL extends Adapter
 	public static function __callStatic( $name, $arguments )
     {
     	$class_called = get_called_class();
-		$temp_name = str_replace( '_', '', $name );
-
-		//check if model file exists
-		if( class_exists( '\\' . $class_called . '\\' . $temp_name ) )
-		{
-			$class = '\\' . $class_called . '\\' . $temp_name;
-			return new $class;
-		}
     	return new $class_called( $name );
     }
-
 
 }
 
