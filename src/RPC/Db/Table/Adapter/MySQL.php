@@ -578,7 +578,7 @@ class MySQL extends Adapter
 					}
 				}
 
-				$output[] = $this->rowclass( $this, $row );
+				$output[] = new  $this->rowclass( $this, $row );
 			}
 
 			return $output;
@@ -686,7 +686,7 @@ class MySQL extends Adapter
 
 	public function cacheQuery( $sql, $seconds )
 	{
-		$filename = PATH_CACHE . '/sql_' . md5( $sql );
+		$filename = CACHE_PATH . '/sql_' . md5( $sql );
 		if( is_readable( $filename ) &&
 		    ( time() - filemtime( $filename ) ) < $seconds )
 		{
@@ -710,6 +710,14 @@ class MySQL extends Adapter
 	public static function __callStatic( $name, $arguments )
     {
     	$class_called = get_called_class();
+    	$temp_name = str_replace( '_', '', $name );
+
+		//check if model file exists
+		if( class_exists( '\\' . $class_called . '\\' . $temp_name ) )
+		{
+			$class = '\\' . $class_called . '\\' . $temp_name;
+			return new $class;
+		}
     	return new $class_called( $name );
     }
 
