@@ -89,9 +89,9 @@ class Statement
 			$sql = preg_replace( '/\?/', "'" . $param . "'", $sql, 1 );
 		}
 		
-		if( defined( 'DEBUG_QUERIES' ) )
+		if( getenv( 'DEBUG_QUERIES' ) )
 		{
-			$this->db->queries[] = $sql;
+			$this->db->getHandle()->_queries[] = $sql;
 		}
 		
 		\RPC\Signal::emit( array( '\RPC\Db', 'query_end' ), array( $this->sql, 'prepared' ) );
