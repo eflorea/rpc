@@ -1,7 +1,10 @@
 <?php
 
 function RPC_Shutdown() { 
-    echo 'Something went wrong. Our amazing team of developers have been notified. Please try again later.';
+	if( count( func_get_args() ) )
+	{
+    	echo 'Something went wrong. Our amazing team of developers have been notified. Please try again later.';
+    }
 }
 register_shutdown_function( 'RPC_Shutdown' );
 
