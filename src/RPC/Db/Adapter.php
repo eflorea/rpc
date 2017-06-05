@@ -146,7 +146,7 @@ abstract class Adapter
 			return 0;
 		}
 
-		if( getenv( 'DEBUG_QUERIES' ) && getenv('DEBUG_QUERIES') === "true" )
+		if( getenv('DEBUG_QUERIES') === "true" )
 		{
 			$this->getHandle()->_queries[] = $sql;
 		}
@@ -172,7 +172,7 @@ abstract class Adapter
 			return null;
 		}
 
-		if( getenv( 'DEBUG_QUERIES' ) && getenv('DEBUG_QUERIES') === "true" )
+		if( getenv('DEBUG_QUERIES') === "true" )
 		{
 			$this->getHandle()->_queries[] = $sql;
 		}

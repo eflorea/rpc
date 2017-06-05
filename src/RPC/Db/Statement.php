@@ -89,7 +89,7 @@ class Statement
 			$sql = preg_replace( '/\?/', "'" . $param . "'", $sql, 1 );
 		}
 		
-		if( getenv( 'DEBUG_QUERIES' ) )
+		if( getenv( 'DEBUG_QUERIES' ) === "true" )
 		{
 			$this->db->getHandle()->_queries[] = $sql;
 		}
