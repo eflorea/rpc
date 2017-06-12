@@ -520,7 +520,7 @@ class Row implements ArrayAccess
 		$v = new \RPC\Validator\Length( -1, $max, $msg );
 		if( ! $v->validate( $value ) )
 		{
-			return $this->setError( $column, str_replace( '{$max}', $min, $v->getError() ) );
+			return $this->setError( $column, str_replace( '{$max}', $max, $v->getError() ) );
 		}
 	}
 
