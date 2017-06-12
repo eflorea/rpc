@@ -211,6 +211,10 @@ abstract class Adapter
 			}
 			else
 			{
+				if( ! $this->model_name )
+				{
+					$this->model_name = $this->force_table_name;
+				}
 				$classrow = $this->rowclass . '\\' . $this->model_name;
 				$classrow = str_replace( '_', '', $classrow );
 				if( class_exists( $classrow ) )
