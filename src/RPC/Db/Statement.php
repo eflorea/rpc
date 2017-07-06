@@ -93,6 +93,11 @@ class Statement
 		{
 			$this->db->getHandle()->_queries[] = $sql;
 		}
+
+		if( getenv( 'LOG_QUERIES' ) === "true" )
+		{
+			$this->db->getHandle()->prepare( " insert into query_logger ( query, ip, created ) values ( ?, ?, ? ) " )->execute( array( $sql, isset( $_SERVER['HTTP_X_REAL_IP'] ) ? $_SERVER['HTTP_X_REAL_IP'] : $_SERVER['REMOTE_ADDR'], date( 'Y-m-d H:i:s' ) ) );
+		}
 		
 		\RPC\Signal::emit( array( '\RPC\Db', 'query_end' ), array( $this->sql, 'prepared' ) );
 		
