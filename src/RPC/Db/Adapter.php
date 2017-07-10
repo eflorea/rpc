@@ -151,12 +151,23 @@ abstract class Adapter
 			$this->getHandle()->_queries[] = $sql;
 		}
 
-		if( getenv( 'LOG_QUERIES' ) === "true" )
+		if( $sql != "select last_insert_id() as n" )
 		{
-			$this->getHandle()->prepare( " insert into query_logger ( query, ip, created ) values ( ?, ?, ? ) " )->execute( array( $sql, isset( $_SERVER['HTTP_X_REAL_IP'] ) ? $_SERVER['HTTP_X_REAL_IP'] : $_SERVER['REMOTE_ADDR'], date( 'Y-m-d H:i:s' ) ) );
+			if( getenv( 'LOG_QUERIES' ) === "true" )
+			{
+				$this->getHandle()->prepare( " insert into query_logger ( query, ip, created ) values ( ?, ?, ? ) " )->execute( array( $sql, isset( $_SERVER['HTTP_X_REAL_IP'] ) ? $_SERVER['HTTP_X_REAL_IP'] : $_SERVER['REMOTE_ADDR'], date( 'Y-m-d H:i:s' ) ) );
+			}
 		}
 
 		$this->_rpc_affectedrows = $this->getHandle()->exec( $sql );
+
+		if( $sql == "select last_insert_id() as n" )
+		{
+			if( getenv( 'LOG_QUERIES' ) === "true" )
+			{
+				$this->getHandle()->prepare( " insert into query_logger ( query, ip, created ) values ( ?, ?, ? ) " )->execute( array( $sql, isset( $_SERVER['HTTP_X_REAL_IP'] ) ? $_SERVER['HTTP_X_REAL_IP'] : $_SERVER['REMOTE_ADDR'], date( 'Y-m-d H:i:s' ) ) );
+			}
+		}
 
 		\RPC\Signal::emit( array( '\RPC\Db', 'query_end' ), array( $sql, 'statement' ) );
 
@@ -182,12 +193,23 @@ abstract class Adapter
 			$this->getHandle()->_queries[] = $sql;
 		}
 
-		if( getenv( 'LOG_QUERIES' ) === "true" )
+		if( $sql != "select last_insert_id() as n" )
 		{
-			$this->getHandle()->prepare( " insert into query_logger ( query, ip, created ) values ( ?, ?, ? ) " )->execute( array( $sql, isset( $_SERVER['HTTP_X_REAL_IP'] ) ? $_SERVER['HTTP_X_REAL_IP'] : $_SERVER['REMOTE_ADDR'], date( 'Y-m-d H:i:s' ) ) );
+			if( getenv( 'LOG_QUERIES' ) === "true" )
+			{
+				$this->getHandle()->prepare( " insert into query_logger ( query, ip, created ) values ( ?, ?, ? ) " )->execute( array( $sql, isset( $_SERVER['HTTP_X_REAL_IP'] ) ? $_SERVER['HTTP_X_REAL_IP'] : $_SERVER['REMOTE_ADDR'], date( 'Y-m-d H:i:s' ) ) );
+			}
 		}
 
 		$res = $this->getHandle()->query( $sql, $this->getFetchMode() );
+
+		if( $sql == "select last_insert_id() as n" )
+		{
+			if( getenv( 'LOG_QUERIES' ) === "true" )
+			{
+				$this->getHandle()->prepare( " insert into query_logger ( query, ip, created ) values ( ?, ?, ? ) " )->execute( array( $sql, isset( $_SERVER['HTTP_X_REAL_IP'] ) ? $_SERVER['HTTP_X_REAL_IP'] : $_SERVER['REMOTE_ADDR'], date( 'Y-m-d H:i:s' ) ) );
+			}
+		}
 
 		\RPC\Signal::emit( array( '\RPC\Db', 'query_end' ), array( $sql, 'query' ) );
 
