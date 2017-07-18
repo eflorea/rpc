@@ -424,6 +424,8 @@ abstract class Adapter
 		$this->getDb()->commit();
 		$this->getIdentityMap()->add( $row );
 
+		$this->afterCompleteInsert( $row );
+
 		return true;
 	}
 
@@ -465,6 +467,15 @@ abstract class Adapter
 	 */
 	public function onAfterInsert( $row )
 	{
+		return true;
+	}
+
+	/**
+	 * Hook called after complete PDO Transaction
+	 *	
+	 * @return bool
+	 */
+	public function afterCompleteInsert( $row ){
 		return true;
 	}
 
@@ -516,6 +527,8 @@ abstract class Adapter
 
 		$this->getDb()->commit();
 
+		$this->afterCompleteUpdate( $row );
+
 		return true;
 	}
 
@@ -539,6 +552,17 @@ abstract class Adapter
 			$row->deleted( date( 'Y-m-d H:i:s' ) );
 		}
 
+		return true;
+	}
+
+	/**
+	 * Hook called after PDO Transaction
+	 *
+	 * @param RPC_Db_Table_Row $row
+	 *
+	 * @return bool
+	 */
+	public function afterCompleteUpdate( $row ){
 		return true;
 	}
 
