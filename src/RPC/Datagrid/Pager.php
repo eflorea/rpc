@@ -229,6 +229,14 @@ class Pager
 		return $this->total;
 	}
 
+	/**
+	 * Return current page
+	 */
+	public function getCurrentPage()
+    {
+        return $this->current;
+    }
+
 }
 
 ?>
