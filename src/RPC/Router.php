@@ -203,11 +203,11 @@ class Router
 			$command->{$this->action . 'Teardown'}( $this->request, $this->response );
 		}
 
-		$command->getView()->flash = $command->flash();
+		$command->getView( true )->flash = $command->flash();
 
 		if( ! $command->template )
 		{
-			$command->getView()->display();
+			$command->getView( true )->display();
 		}
 
 		if( is_callable( array( $command, 'teardown' ), false ) )

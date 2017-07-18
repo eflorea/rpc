@@ -20,11 +20,11 @@ class Controller
 	public function display( $template = null )
 	{
 		$this->template = $template;
-		$this->getView()->display( $template );
+		$this->getView( true )->display( $template );
 	}
 
 
-	public function getView()
+	public function getView( $refresh_vars = false )
 	{
 		if( ! Registry::registered( 'view' ) )
 		{
@@ -37,6 +37,14 @@ class Controller
 
 			$view->setVars( $this->vars );
 
+
+			Registry::set( 'view', $view );
+		}
+
+		if( $refresh_vars )
+		{
+			$view = Registry::get( 'view' );
+			$view->setVars( $this->vars );
 
 			Registry::set( 'view', $view );
 		}

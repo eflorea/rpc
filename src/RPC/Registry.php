@@ -44,13 +44,7 @@ class Registry
 	 * @return RPC_Registry
 	 */
 	public static function set( $name, $obj )
-	{
-		if( array_key_exists( $name, self::$registry ) )
-		{
-			return null;
-			throw new \Exception( 'An object with the same name has already been registered' );
-		}
-		
+	{		
 		self::$registry[$name] = $obj;
 		
 		return $obj;
@@ -68,7 +62,6 @@ class Registry
 		if( ! self::registered( $name ) )
 		{
 			return null;
-			throw new \Exception( 'There is no registered object with the name: "' . $name . '"' );
 		}
 		
 		return self::$registry[$name];
