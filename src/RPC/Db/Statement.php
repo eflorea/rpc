@@ -80,34 +80,35 @@ class Statement
 			return null;
 		}
 
+		$sql = $this->sql;
+
+		foreach( $params as $param )
+		{
+			$sql = preg_replace( '/\?/', "'" . $param . "'", $sql, 1 );
+		}
+
 		if( getenv( 'DEBUG_QUERIES' ) === "true" )
 		{
-			$this->db->getHandle()->_queries[] = $this->sql;
+			$this->db->getHandle()->_queries[] = $sql;
 		}
 
 		if( $this->sql != "select last_insert_id() as n" )
   		{
 			if( getenv( 'LOG_QUERIES' ) === "true" )
 			{
-				$this->db->getHandle()->prepare( " insert into query_logger ( query, ip, created ) values ( ?, ?, ? ) " )->execute( array( $this->sql, isset( $_SERVER['HTTP_X_REAL_IP'] ) ? $_SERVER['HTTP_X_REAL_IP'] : $_SERVER['REMOTE_ADDR'], date( 'Y-m-d H:i:s' ) ) );
+				$this->db->getHandle()->prepare( " insert into query_logger ( query, ip, created ) values ( ?, ?, ? ) " )->execute( array( $sql, isset( $_SERVER['HTTP_X_REAL_IP'] ) ? $_SERVER['HTTP_X_REAL_IP'] : $_SERVER['REMOTE_ADDR'], date( 'Y-m-d H:i:s' ) ) );
 			}
 		}
 		
 		$res = $this->stmt->execute( $params );
 
-		if( $this->sql == "select last_insert_id() as n" )
+
+		if( $sql == "select last_insert_id() as n" )
   		{
 			if( getenv( 'LOG_QUERIES' ) === "true" )
 			{
-				$this->db->getHandle()->prepare( " insert into query_logger ( query, ip, created ) values ( ?, ?, ? ) " )->execute( array( $this->sql, isset( $_SERVER['HTTP_X_REAL_IP'] ) ? $_SERVER['HTTP_X_REAL_IP'] : $_SERVER['REMOTE_ADDR'], date( 'Y-m-d H:i:s' ) ) );
+				$this->db->getHandle()->prepare( " insert into query_logger ( query, ip, created ) values ( ?, ?, ? ) " )->execute( array( $sql, isset( $_SERVER['HTTP_X_REAL_IP'] ) ? $_SERVER['HTTP_X_REAL_IP'] : $_SERVER['REMOTE_ADDR'], date( 'Y-m-d H:i:s' ) ) );
 			}
-		}
-		
-		$sql = $this->sql;
-
-		foreach( $params as $param )
-		{
-			$sql = preg_replace( '/\?/', "'" . $param . "'", $sql, 1 );
 		}
 		
 		

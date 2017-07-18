@@ -43,6 +43,9 @@ abstract class Adapter
 	protected $_rpc_affectedrows = 0;
 
 
+	public $transaction_started = null;
+
+
 	/**
 	 * Tries to connect to the database, throwing an exception if it fails
 	 *
@@ -248,6 +251,12 @@ abstract class Adapter
 	 */
 	public function beginTransaction()
 	{
+		if( $this->transaction_started )
+		{
+			return true;
+		}
+
+		$this->transaction_started = true;
 		return $this->getHandle()->beginTransaction();
 	}
 
@@ -258,6 +267,8 @@ abstract class Adapter
 	 */
 	public function commit()
 	{
+		$this->transaction_started = null;
+
 		return $this->getHandle()->commit();
 	}
 
@@ -268,6 +279,7 @@ abstract class Adapter
 	 */
 	public function rollback()
 	{
+		$this->transaction_started = null;
 		return $this->getHandle()->rollBack();
 	}
 
