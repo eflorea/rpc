@@ -116,7 +116,7 @@ class Datagrid
 		}
 		else
 		{
-			if( $sortby[$column] == 'desc' )
+			if( stripos( $sortby[$column], 'desc' ) !== false )
 			{
 				unset( $sortby[$column] );
 				$class = 'sortdesc';
@@ -183,9 +183,12 @@ class Datagrid
 			foreach( $this->allowsort as $allowcolumn )
 			{
 				$order = @$sortarray[$allowcolumn];
-				if( ! empty( $order ) &&
-					( $order == 'asc' ||
-					  $order == 'desc' ) )
+				if( ! empty( $order ) && 
+					( 
+						stripos( $order, 'asc' ) !== false || 
+						stripos( $order, 'desc' ) !== false 
+					)
+				)
 				{
 					$this->sortby[$allowcolumn] = $order;
 				}
