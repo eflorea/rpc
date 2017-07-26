@@ -203,7 +203,7 @@ class Router
 			$command->{$this->action . 'Teardown'}( $this->request, $this->response );
 		}
 
-		$command->getView( true )->flash = $command->flash();
+		$command->flash = $command->flash();
 
 		if( ! $command->template )
 		{
