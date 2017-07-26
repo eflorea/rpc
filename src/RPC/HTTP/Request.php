@@ -91,6 +91,13 @@ class Request
 	public $post = array();
 
 	/**
+	 * Hash containing all the file variables sent with the request
+	 *
+	 * @var array
+	 */
+	public $files = array();
+
+	/**
 	 * Class constructor. The request is a singleton so this method is protected
 	 * and the objects can't be initialized using the "new" operator
 	 *
@@ -98,8 +105,9 @@ class Request
 	 */
 	protected function __construct()
 	{
-		$this->post = $_POST;
-		$this->get  = $_GET;
+		$this->post  = $_POST;
+		$this->get   = $_GET;
+		$this->files = $_FILES;
 	}
 
 	/**
