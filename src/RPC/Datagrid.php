@@ -184,10 +184,10 @@ class Datagrid
 			{
 				$order = @$sortarray[$allowcolumn];
 				if( ! empty( $order ) &&
-					( $order == 'asc' ||
-					  $order == 'desc' ) )
+					( strtolower( $order ) == 'asc' ||
+					  strtolower( $order ) == 'desc' ) )
 				{
-					$this->sortby[$allowcolumn] = $order;
+					$this->sortby[$allowcolumn] = strtolower( $order );
 				}
 			}
 			
