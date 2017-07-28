@@ -676,6 +676,16 @@ class Row implements ArrayAccess
 
 		$fields = $this->getTable()->getFields();
 
+		$extra_fields = $thisExtraFields();
+
+	    if( $extra_fields )
+	    {
+	    	foreach( $extra_fields as $field => $value )
+	    	{
+	    		$fields[] = $field;
+	    	}
+	    }
+
 		if( count( $options ) )
 		{
 			//check if we have ignore
@@ -708,17 +718,12 @@ class Row implements ArrayAccess
 					//this is for when the rule doesn't exist and the user wants the default validation
 					if( is_numeric( $field ) )
 					{
-						if( in_array( $option, $fields ) )
-						{
-							$validate_rules[$option] = $this->_parseValidateRules( '' );
-						}
+						$validate_rules[$option] = $this->_parseValidateRules( '' );
+						
 					}
 					else
 					{
-						if( in_array( $field, $fields ) )
-						{
-							$validate_rules[$field] = $this->_parseValidateRules( $option );
-						}
+						$validate_rules[$field] = $this->_parseValidateRules( $option );
 					}
 
 				}
