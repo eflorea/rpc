@@ -130,6 +130,15 @@ class Router
 
 		$command = 'APP\\Controller\\' . $this->controller;
 
+		if( ! class_exists( $command ) )
+		{
+			if( $this->action != 'index' )
+			{
+				$command .= '\\' . ucfirst( $this->action );
+				$this->action = 'index';
+			}
+		}
+
 		$command = new $command;
 		if( ! $command instanceof \RPC\Controller )
 		{
