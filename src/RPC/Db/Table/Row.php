@@ -676,7 +676,7 @@ class Row implements ArrayAccess
 
 		$fields = $this->getTable()->getFields();
 
-		$extra_fields = $thisExtraFields();
+		$extra_fields = $this->getExtraFields();
 
 	    if( $extra_fields )
 	    {
