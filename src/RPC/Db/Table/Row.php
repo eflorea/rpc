@@ -595,6 +595,12 @@ class Row implements ArrayAccess
 
 			foreach( $rules as $rule => $msg )
 			{
+				// skip over running a validation method if this rule is 'optional'
+				if( $rule == 'optional' )
+				{
+					continue;
+				}
+
 				//check if msg exists
 				if( is_numeric( $rule ) )
 				{
