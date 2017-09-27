@@ -144,14 +144,14 @@ class Signal
 				}
 				else
 				{
-					$ret = RPC\Signal::emit( $slot['slot'], $params );
+					$ret = \RPC\Signal::emit( $slot['slot'], $params );
 				}
 				
-				if( $ret === RPC\Signal::STOP_BROADCAST )
+				if( $ret === \RPC\Signal::STOP_BROADCAST )
 				{
 					break;
 				}
-				elseif( $ret === RPC\Signal::STOP_SIGNAL )
+				elseif( $ret === \RPC\Signal::STOP_SIGNAL )
 				{
 					return false;
 				}
