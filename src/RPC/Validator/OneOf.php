@@ -12,7 +12,7 @@ class OneOf extends Validator
 	
 	public function __construct( $values, $errormessage = '' )
 	{
-		if( ! is_array( $values ) ||
+		if( ! is_array( $values ) &&
 		    ! is_object( $values ) )
 		{
 			throw new \Exception( 'Illegal parameter' );
@@ -32,7 +32,7 @@ class OneOf extends Validator
 	public function validate( $value )
 	{
 		$valid = false;
-		foreach( $values as $v )
+		foreach( $this->values as $v )
 		{
 			if( $value == $v )
 			{
