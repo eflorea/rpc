@@ -337,7 +337,7 @@ class Session
 		//session hijacking
 		if( isset( $_SESSION['HTTP_USER_AGENT'] ) )
 		{
-		    if( $_SESSION['HTTP_USER_AGENT'] != md5( $_SERVER['HTTP_USER_AGENT'] . 'three29framework' ) )
+		    if( $_SESSION['HTTP_USER_AGENT'] != md5( @$_SERVER['HTTP_USER_AGENT'] . 'three29framework' ) )
 		    {
 		        /* Prompt for password */
 		        $this->destroy();
