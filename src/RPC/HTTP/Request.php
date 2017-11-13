@@ -497,7 +497,7 @@ class Request
 	{
 		if( $this->getMethod() == $method && @$this->{$method}['csrf_token'] !== \RPC\Util::csrf() )
 		{
-			throw new \Exception( 'Token was not found. Please go back and refresh your page.' );
+            throw new \Exception( 'Token was not found. Please go back and refresh your page. Token: ' . @$this->{$method}['csrf_token'] );
 		}
 
 		return true;
