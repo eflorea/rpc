@@ -147,7 +147,7 @@ class Router
 
 		if( ! in_array( $_SERVER['REQUEST_METHOD'], array( 'GET', 'POST', 'PUT' ) ) )
 		{
-			throw new \Exception( 'Request Method is not valid: ' . $_SERVER['REQUEST_METHOD'] );
+			return false;
 		}
 
 		$request = $_SERVER['REQUEST_METHOD'];
