@@ -304,7 +304,7 @@ class Datagrid
 		if( $this->manual_sql )
 		{
 			$sql = trim( $this->manual_sql );
-			$sql = preg_replace( '/select /', 'select SQL_CALC_FOUND_ROWS', $this->manual_sql, 1 );
+			$sql = preg_replace( '/select /', 'select SQL_CALC_FOUND_ROWS ', $this->manual_sql, 1 );
 		}
 		else
 		{
