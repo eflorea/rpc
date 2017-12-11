@@ -308,6 +308,29 @@ class Util
 		$log->write_log( $level, $message, $php_error );
 	}
 
+    /**
+     * Returns client IP address used for request and falls back on php_sapi_name if that not present
+     *
+     * @return string
+     */
+    public static function get_client_source() {
+
+        // Return early if CLI
+        if(PHP_SAPI === 'cli') return PHP_SAPI;
+
+        // Should try these in the order they are listed
+        $remote_sources = ['HTTP_X_REAL_IP', 'REMOTE_ADDR'];
+
+        foreach ($remote_sources as $source) {
+            if (isset($_SERVER[$source])) {
+                return $_SERVER[$source];
+            }
+        }
+
+        // If all else fails return something
+        return 'unknown';
+    }
+
 }
 
 ?>

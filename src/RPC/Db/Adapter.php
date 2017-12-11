@@ -155,7 +155,7 @@ abstract class Adapter
 		{
 			if( getenv( 'LOG_QUERIES' ) === "true" )
 			{
-				$this->getHandle()->prepare( " insert into query_logger ( query, ip, created ) values ( ?, ?, ? ) " )->execute( array( $sql, isset( $_SERVER['HTTP_X_REAL_IP'] ) ? $_SERVER['HTTP_X_REAL_IP'] : $_SERVER['REMOTE_ADDR'], date( 'Y-m-d H:i:s' ) ) );
+				$this->getHandle()->prepare( " insert into query_logger ( query, ip, created ) values ( ?, ?, ? ) " )->execute( array( $sql, \RPC\Util::get_client_source(), date( 'Y-m-d H:i:s' ) ) );
 			}
 		}
 
@@ -165,7 +165,7 @@ abstract class Adapter
 		{
 			if( getenv( 'LOG_QUERIES' ) === "true" )
 			{
-				$this->getHandle()->prepare( " insert into query_logger ( query, ip, created ) values ( ?, ?, ? ) " )->execute( array( $sql, isset( $_SERVER['HTTP_X_REAL_IP'] ) ? $_SERVER['HTTP_X_REAL_IP'] : $_SERVER['REMOTE_ADDR'], date( 'Y-m-d H:i:s' ) ) );
+				$this->getHandle()->prepare( " insert into query_logger ( query, ip, created ) values ( ?, ?, ? ) " )->execute( array( $sql, \RPC\Util::get_client_source(), date( 'Y-m-d H:i:s' ) ) );
 			}
 		}
 
@@ -197,7 +197,7 @@ abstract class Adapter
 		{
 			if( getenv( 'LOG_QUERIES' ) === "true" )
 			{
-				$this->getHandle()->prepare( " insert into query_logger ( query, ip, created ) values ( ?, ?, ? ) " )->execute( array( $sql, isset( $_SERVER['HTTP_X_REAL_IP'] ) ? $_SERVER['HTTP_X_REAL_IP'] : $_SERVER['REMOTE_ADDR'], date( 'Y-m-d H:i:s' ) ) );
+				$this->getHandle()->prepare( " insert into query_logger ( query, ip, created ) values ( ?, ?, ? ) " )->execute( array( $sql, \RPC\Util::get_client_source(), date( 'Y-m-d H:i:s' ) ) );
 			}
 		}
 
@@ -207,7 +207,7 @@ abstract class Adapter
 		{
 			if( getenv( 'LOG_QUERIES' ) === "true" )
 			{
-				$this->getHandle()->prepare( " insert into query_logger ( query, ip, created ) values ( ?, ?, ? ) " )->execute( array( $sql, isset( $_SERVER['HTTP_X_REAL_IP'] ) ? $_SERVER['HTTP_X_REAL_IP'] : $_SERVER['REMOTE_ADDR'], date( 'Y-m-d H:i:s' ) ) );
+				$this->getHandle()->prepare( " insert into query_logger ( query, ip, created ) values ( ?, ?, ? ) " )->execute( array( $sql, \RPC\Util::get_client_source(), date( 'Y-m-d H:i:s' ) ) );
 			}
 		}
 
