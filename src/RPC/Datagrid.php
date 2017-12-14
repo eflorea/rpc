@@ -68,15 +68,17 @@ class Datagrid
 
 	protected $manual_sql = null;
 	protected $join_sql = null;
+	protected $select_only = null;
 
 	
 	/**
 	 * Class constructor
 	 */
-	public function __construct( $model = null )
+	public function __construct( $model = null, $select_only = null )
 	{
 		$this->model = $model;
 		$this->setPager( new Pager() );
+		$this->select_only = $select_only;
 	}
 	
 	/**
@@ -310,7 +312,7 @@ class Datagrid
 		{
 			$sql = '
 				SELECT SQL_CALC_FOUND_ROWS
-					*
+					' . ( $this->select_only ? $this->select_only : '*' ) . '
 				FROM
 					' . $this->model->getName();
 		}
