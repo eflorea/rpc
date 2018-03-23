@@ -75,10 +75,8 @@ class Form extends Filter
 		}
 
 		$regex  = new \RPC\Regex( '/<form.*?method="([^"]+)".*?(?<!\?)>/' );
-		$csrf_token = \RPC\Registry::get('csrf_token');
-		$source = $regex->replace( $source, '${0}<?php $form = new \RPC\View\Filter\Form; ?><?php $form->setMethod( \'${1}\' ); ?><input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">' );
+		$source = $regex->replace( $source, '${0}<?php $form = new \RPC\View\Filter\Form; ?><?php $form->setMethod( \'${1}\' ); if( strtolower( \'${1}\' ) === \'post\' ): $csrf_token_name = md5( $_SERVER[\'REQUEST_URI\'] ); ?><input type="hidden" name="csrf_token" value="<?php echo $csrf_token_name; ?>_<?php echo \RPC\Util::csrf( $csrf_token_name ); ?>"><?php endif; ?>' );
 
-		//$source = parent::filter( $source );
 
 		return $source;
 	}
