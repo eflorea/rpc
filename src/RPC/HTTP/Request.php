@@ -202,7 +202,7 @@ class Request
 	 */
 	public function getHeaders()
 	{
-		if( is_null( $this->headers == null ) )
+		if( is_null( $this->headers = null ) )
 		{
 			if( function_exists( 'getallheaders' ) )
 			{
