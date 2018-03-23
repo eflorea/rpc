@@ -33,7 +33,7 @@ class Controller
 
 			$this->vars['current_method'] 		= $this->current_method;
 			$this->vars['current_controller'] 	= $this->current_controller;
-			$this->vars['csrf_token']			= \RPC\Util::csrf();
+			$this->vars['csrf_token']			= md5( 'general' ) . '_' . \RPC\Util::csrf( md5( 'general' ) );
 
 			$view->setVars( $this->vars );
 
