@@ -269,22 +269,17 @@ class Util
 		return $password;
 	}
 
-
-	public static function csrf()
+	/**
+	 * Retrieve or set session cookie for csrf_token based on name 
+	 */
+	public static function csrf( $name = 'general' )
 	{
-		$filename = CACHE_PATH . '/' . 'csrf_token.txt';
-
-		if( is_readable( $filename ) &&
-		    ( time() - filemtime( $filename ) ) < ( 3600* 48 ) )
+		if( ! isset( $_SESSION['csrf_token_' . $name] ) )
 		{
-			return file_get_contents( $filename );
+			$_SESSION['csrf_token_' . $name] = md5( $name . session_id() . rand() );
 		}
 
-		$token = self::generatePronouncablePassword( 8 );
-
-		file_put_contents( $filename, $token );
-
-		return $token;
+		return $_SESSION['csrf_token_' . $name];
 	}
 
 	/**

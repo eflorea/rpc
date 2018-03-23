@@ -495,9 +495,13 @@ class Request
 	 */
 	public function validateCSRF( $method = 'post' )
 	{
-		if( $this->getMethod() == $method && @$this->{$method}['csrf_token'] !== \RPC\Util::csrf() )
+		if( $this->getMethod() == $method )
 		{
-            throw new \Exception( 'Token was not found. Please go back and refresh your page. Token: ' . @$this->{$method}['csrf_token'] );
+			$csrf_token_pieces = explode( '_', @$this->{$method}['csrf_token'] );
+			if( count( $csrf_token_pieces ) != 2 ||
+				$csrf_token_pieces[1] !== \RPC\Util::csrf( $csrf_token_pieces[0] ) ) {
+            	throw new \Exception( 'Token was not found. Please go back and refresh your page. Token: ' . @$this->{$method}['csrf_token'] );
+        	}
 		}
 
 		return true;
