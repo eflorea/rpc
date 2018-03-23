@@ -834,13 +834,14 @@ class Row implements ArrayAccess
     {
     	if( ! method_exists( $this, $name ) )
 		{
-			if( $arguments &&
-				isset( $arguments[0] ) )
+			if( $arguments )
 			{
-				$this[$name] = $arguments[0];
+				if( isset( $arguments[0] ) ||
+					$arguments[0] === NULL )
+				{
+					$this[$name] = $arguments[0];
+				}
 			}
-
-
 
 			//check if property exists
 			if( isset( $this[$name] ) ||
