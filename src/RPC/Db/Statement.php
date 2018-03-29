@@ -92,7 +92,8 @@ class Statement
 			$this->db->getHandle()->_queries[] = $sql;
 		}
 
-		if( $this->sql != "select last_insert_id() as n" )
+		if( $this->sql != "select last_insert_id() as n" &&
+			$this->sql != "select scope_identity() as n" )
   		{
 			if( getenv( 'LOG_QUERIES' ) === "true" )
 			{
@@ -103,7 +104,8 @@ class Statement
 		$res = $this->stmt->execute( $params );
 
 
-		if( $sql == "select last_insert_id() as n" )
+		if( $sql == "select last_insert_id() as n" ||
+			$sql == "select scope_identity() as n" )
   		{
 			if( getenv( 'LOG_QUERIES' ) === "true" )
 			{
