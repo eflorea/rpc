@@ -76,20 +76,22 @@ class MSSQL extends Adapter
 		{
 			if( $this->_rpc_port )
 			{
-				$dns = 'dblib:host=' . $this->_rpc_hostname . ':' . $this->_rpc_port .';dbname=' . $this->_rpc_database;
+				$dsn = 'dblib:host=' . $this->_rpc_hostname . ':' . $this->_rpc_port .';dbname=' . $this->_rpc_database;
 			}
 			else
 			{
-				$dns = 'dblib:host=' . $this->_rpc_hostname . ';dbname=' . $this->_rpc_database;
+				$dsn = 'dblib:host=' . $this->_rpc_hostname . ';dbname=' . $this->_rpc_database;
 			}
-			$GLOBALS['dbconnection'] = new \PDO( $dsn, $username, $password );
+
+			$GLOBALS['dbconnection'] = new \PDO( $dsn, $username, $password,  array(
+		        PDO::ATTR_TIMEOUT => 3,
+		        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+		    ) );			
 		}
-		
 		
 		$this->setHandle( $GLOBALS['dbconnection'] );
 		$this->getHandle()->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
 		$this->getHandle()->setAttribute( \PDO::ATTR_CASE, \PDO::CASE_LOWER );
-		$this->getHandle()->setAttribute( \PDO::ATTR_AUTOCOMMIT, true );
 		
 		return $this;
 	}
@@ -144,6 +146,42 @@ class MSSQL extends Adapter
 	public function prepare( $sql, $options = array() )
 	{
 		return new \RPC\Db\Statement( $sql, $options, $this );
+	}
+
+
+	public function execute( $sql )
+	{
+		if( ! \RPC\Signal::emit( array( '\RPC\Db', 'query_start' ), array( $sql, 'statement' ) ) )
+		{
+			return 0;
+		}
+
+		if( getenv('DEBUG_QUERIES') === "true" )
+		{
+			$this->getHandle()->_queries[] = $sql;
+		}
+
+		if( $sql != "select scope_identity() as n" )
+		{
+			if( getenv( 'LOG_QUERIES' ) === "true" )
+			{
+				$this->getHandle()->prepare( " insert into query_logger ( query, ip, created ) values ( ?, ?, ? ) " )->execute( array( $sql, \RPC\Util::get_client_source(), date( 'Y-m-d H:i:s' ) ) );
+			}
+		}
+
+		$this->_rpc_affectedrows = $this->getHandle()->exec( $sql );
+
+		if( $sql == "select scope_identity() as n" )
+		{
+			if( getenv( 'LOG_QUERIES' ) === "true" )
+			{
+				$this->getHandle()->prepare( " insert into query_logger ( query, ip, created ) values ( ?, ?, ? ) " )->execute( array( $sql, \RPC\Util::get_client_source(), date( 'Y-m-d H:i:s' ) ) );
+			}
+		}
+
+		\RPC\Signal::emit( array( '\RPC\Db', 'query_end' ), array( $sql, 'statement' ) );
+
+		return $this->_rpc_affectedrows;
 	}
 
 	

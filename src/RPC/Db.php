@@ -121,15 +121,10 @@ class Db
 		
 		$tmp = '\RPC\Db\Adapter\\' . $info['adapter'];
 
-		$database = new \RPC\Db\Adapter\MySQL( $info['hostname'],
-		                      $info['database'],
-		                      $info['socket'],
-		                      $info['port'] );
-/*
 		$database = new $tmp( $info['hostname'],
 		                      $info['database'],
 		                      $info['socket'],
-		                      $info['port'] );*/
+		                      $info['port'] );
 		$database->connect( $info['username'], $info['password'] );
 		$database->setPrefix( $info['prefix'] );
 		
