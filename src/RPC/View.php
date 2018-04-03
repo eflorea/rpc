@@ -319,6 +319,9 @@ class View
 		$this->display( $template );
 		$output = ob_get_clean();
 
+		//reset current template
+		$this->setCurrentTemplate( null );
+
 		return $output;
 	}
 

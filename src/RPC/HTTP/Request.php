@@ -43,37 +43,15 @@ class Request
 	 */
 	protected $headers = null;
 
-	/**
-	 * The context path parameters in an indexed array
-	 *
-	 * @var array
+	/*
+	 * All params
 	 */
-	protected $pathparams = array();
-
-	/**
-	 * The context path parameters in an associative array
-	 *
-	 * @var array
-	 */
-	protected $pathparamsassoc = null;
-
-	/**
-	 * The default locale (eg. en-us) the application uses
-	 *
-	 * @var string
-	 */
-	protected $defaultlocale = 'en-us';
-
-	/**
-	 * The locales (eg. en-us, fi_fi, se_se etc) the application
-	 * supports
-	 *
-	 * @var array
-	 */
-	protected $supportedlocales = array();
 
 	protected $params = null;
 
+    /*
+     * Current router
+     */
 	protected $router = null;
 
 	/**
@@ -384,67 +362,6 @@ class Request
 	public function getPathInfo()
 	{
 		return isset( $_SERVER['PATH_INFO'] ) ? $_SERVER['PATH_INFO'] : null;
-	}
-
-	/**
-	 * Returns the real path to the requested resource
-	 *
-	 * @return string
-	 */
-	public function getPathTranslated()
-	{
-		return isset( $_SERVER['PATH_TRANSLATED'] ) ? $_SERVER['PATH_TRANSLATED'] : null;
-	}
-
-	/**
-	 * Gets the protocol
-	 *
-	 * Returns the name and version of the protocol the request uses
-	 * in the form protocol/majorVersion/minorVersion, for example
-	 * HTTP/1.1
-	 *
-	 * @return string
-	 */
-	public function getProtocol()
-	{
-		return $_SERVER['SERVER_PROTOCOL'];
-	}
-
-	/**
-	 * Gets the remove address.
-	 *
-	 * Returns the Internet Protocol (IP) address of the client that
-	 * sent the request.
-	 *
-	 * @return   string  the ip address
-	 */
-	public function getRemoteAddress()
-	{
-		return isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : null;
-	}
-
-	/**
-	 * Returns the fully qualified name of the client that sent the
-	 * request.
-	 *
-	 * This is figured out by doing a dns server lookup of the ip address.
-	 * If no host is associated with the address NULL is returned.
-	 *
-	 * @return string
-	 */
-	public function getRemoteHost()
-	{
-		if( $ra = $this->getRemoteAddress() )
-		{
-			$hostname = gethostbyaddr( $ra );
-
-			if( $hostname == $ra )
-			{
-				return null;
-			}
-		}
-
-		return $hostname;
 	}
 
 	/**
