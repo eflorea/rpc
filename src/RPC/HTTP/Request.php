@@ -39,9 +39,9 @@ class Request
 	/**
 	 * All the headers
 	 *
-	 * @var array
+	 * @var null
 	 */
-	protected $headers = array();
+	protected $headers = null;
 
 	/**
 	 * The context path parameters in an indexed array
@@ -202,7 +202,7 @@ class Request
 	 */
 	public function getHeaders()
 	{
-		if( is_null( $this->headers = null ) )
+		if( is_null( $this->headers ) )
 		{
 			if( function_exists( 'getallheaders' ) )
 			{
