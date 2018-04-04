@@ -38,8 +38,10 @@ class Request
 
 	/**
 	 * All the headers
+	 *
+	 * @var null
 	 */
-	protected $headers = array();
+	protected $headers = null;
 
 	/*
 	 * All params
@@ -178,7 +180,7 @@ class Request
 	 */
 	public function getHeaders()
 	{
-		if( is_null( $this->headers == null ) )
+		if( is_null( $this->headers ) )
 		{
 			if( function_exists( 'getallheaders' ) )
 			{
