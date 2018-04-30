@@ -17,7 +17,7 @@ class Name extends RPC_Validator
 	 */
 	public function validate( $value )
 	{
-		return preg_match( RPC\Regex::NAME, $value  );
+		return preg_match( Regex::NAME, $value );
 	}
 	
 }

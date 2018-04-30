@@ -22,7 +22,7 @@ class URI extends Validator
 	 */
 	public function validate( $value )
 	{
-		return preg_match( RPC\Regex::URI , $value );
+		return preg_match( Regex::URI, $value );
 	}
 	
 }

@@ -3,6 +3,7 @@
 namespace RPC\Validator;
 
 use RPC\Validator;
+use RPC\Regex;
 
 /**
  * Validates a ZIP code
@@ -21,7 +22,7 @@ class Zip extends Validator
 	 */
 	public function validate( $value )
 	{
-		return (bool) preg_match( RPC\Regex::US_ZIP, $value );
+		return (bool) preg_match( Regex::US_ZIP, $value );
 	}
 	
 }
