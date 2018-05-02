@@ -22,7 +22,7 @@ class Domain extends Validator
 	 */
 	public function validate( $value )
 	{
-		return preg_match( RPC\Regex::DOMAIN , $value );
+		return preg_match( Regex::DOMAIN, $value );
 	}
 	
 }
