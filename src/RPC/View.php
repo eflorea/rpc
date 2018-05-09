@@ -126,6 +126,16 @@ class View
 	}
 
 	/**
+	 * Set the template directory
+	 *
+	 * @param string $dir template directory path
+	 */
+	public function setTemplateDirectory($dir)
+	{
+		$this->_view_tpldir = realpath($dir);
+	}
+
+	/**
 	 * Set the HTTP Response object
 	 *
 	 * @param RPC_HTTP_Response $response
@@ -247,6 +257,15 @@ class View
 		return $this->_view_cache;
 	}
 
+	/**
+	 * Set the view cache
+	 *
+	 * @param RPC_View_Cache $cache the parser's cache object
+	 */
+	public function setCache($cache)
+	{
+		$this->_view_cache = $cache;
+	}
 
 	public function setVars( $vars )
 	{
