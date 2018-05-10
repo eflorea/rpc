@@ -107,7 +107,7 @@ class MSSQL extends Adapter
 
 		if( ! isset( $args[0] ) )
 		{
-			return null;
+			return [];
 		}
 
 		$condition_values = array();
@@ -161,7 +161,7 @@ class MSSQL extends Adapter
 			$res = $this->getDb()->query( $sql );
 		}
 
-		return $res ? $res[0] : null;
+		return $res ? $res[0] : [];
 	}
 
 
