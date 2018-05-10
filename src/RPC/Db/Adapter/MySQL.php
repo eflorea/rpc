@@ -76,7 +76,7 @@ class MySQL extends Adapter
 		{
 			if( $this->_rpc_socket )
 			{
-				$dns = 'mysql:unix_socket=' . $this->_rpc_socket . ';dname=' . $this->_rpc_database;
+				$dsn = 'mysql:unix_socket=' . $this->_rpc_socket . ';dname=' . $this->_rpc_database;
 			}
 			else
 			{
