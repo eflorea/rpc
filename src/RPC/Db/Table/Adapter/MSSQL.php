@@ -107,7 +107,7 @@ class MSSQL extends Adapter
 
 		if( ! isset( $args[0] ) )
 		{
-			return null;
+			return [];
 		}
 
 		$condition_values = array();
@@ -161,12 +161,7 @@ class MSSQL extends Adapter
 			$res = $this->getDb()->query( $sql );
 		}
 
-		if( count( $res ) )
-		{
-			return $res[0];
-		}
-
-		return null;
+		return $res ? $res[0] : [];
 	}
 
 
@@ -178,12 +173,8 @@ class MSSQL extends Adapter
 		{
 			$sql = 'select top 1000 * from "' . $this->getName() . '"';
 			$res = $this->getDb()->query( $sql );
-			if( count( $res ) )
-			{
-				return $res;
-			}
 			
-			return null;
+			return $res ?: [];
 		}
 
 		$condition_values = array();
@@ -237,12 +228,7 @@ class MSSQL extends Adapter
 			$res = $this->getDb()->query( $sql );
 		}
 
-		if( count( $res ) )
-		{
-			return $res;
-		}
-
-		return null;
+		return $res ?: [];
 	}
 
 
@@ -306,12 +292,7 @@ class MSSQL extends Adapter
 			$res = $this->getDb()->query( $sql );
 		}
 
-		if( count( $res ) )
-		{
-			return $res;
-		}
-
-		return null;
+		return $res ?: [];
 	}
 
 
@@ -377,7 +358,7 @@ class MSSQL extends Adapter
 			$res = $this->getDb()->query( $sql );
 		}
 
-		if( count( $res ) )
+		if( $res )
 		{
 			$row = $res[0];
 
@@ -466,7 +447,7 @@ class MSSQL extends Adapter
 
 
 
-		if( count( $res ) )
+		if( $res )
 		{
 			$fields = $this->getFields();
 
@@ -493,7 +474,7 @@ class MSSQL extends Adapter
 			return $output;
 		}
 
-		return null;
+		return [];
 	}
 
 	public function findBySql()
@@ -558,7 +539,7 @@ class MSSQL extends Adapter
 			$res = $this->getDb()->query( $sql );
 		}
 
-		if( count( $res ) )
+		if( $res )
 		{
 			$output = array();
 
@@ -583,7 +564,7 @@ class MSSQL extends Adapter
 			return $output;
 		}
 
-		return null;
+		return [];
 	}
 
 
