@@ -807,7 +807,10 @@ class Row implements ArrayAccess
 	 */
 	public function __clone()
 	{
+        $this->populate( $this->getData() ); // force all fields to be marked as changed, otherwise they won't be saved
 		$this->row[$this->getTable()->getPkField()] = null;
+        $this->row['created'] = null;
+        $this->row['modified'] = null;
 
 		$this->errors = array();
 		$this->clean  = $this->row;
