@@ -1,11 +1,11 @@
 {
-    "name": "eflorea/rpc",
+    "name": "jwele329/rpc",
     "license": "MIT",
     "description": "Reusable PHP Components",
     "authors": [
         {
-            "name": "Eduard Florea",
-            "email": "eflorea@three29.com"
+            "name": "Justin Welenofsky",
+            "email": "jwelenofsky@three29.com"
         }
     ],
     "require": {
