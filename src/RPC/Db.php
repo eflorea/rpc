@@ -125,7 +125,13 @@ class Db
 		                      $info['database'],
 		                      $info['socket'],
 		                      $info['port'] );
-		$database->connect( $info['username'], $info['password'] );
+		$options = array();
+
+		if (! empty( $info['sql_mode'] ) ) {
+			$option['sql_mode'] = $info['sql_mode'];
+		}
+
+		$database->connect( $info['username'], $info['password'], $options );
 		$database->setPrefix( $info['prefix'] );
 		
 		self::$instances[$connection] = $database;
