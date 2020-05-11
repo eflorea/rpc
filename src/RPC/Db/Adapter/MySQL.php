@@ -65,11 +65,11 @@ class MySQL extends Adapter
 	 * 
 	 * @param string $username
 	 * @param string $password
-	 * @param int    $options
+	 * @param array  $options
 	 * 
 	 * @return RPC_Db_Adapter_MySQL
 	 */
-	public function connect( $username, $password, $options = null )
+	public function connect( $username, $password, $options = [] )
 	{ 
 		
 		if( ! isset( $GLOBALS['dbconnection'] ) )
@@ -82,7 +82,14 @@ class MySQL extends Adapter
 			{
 				$dsn = 'mysql:host=' . $this->_rpc_hostname . ';dbname=' . $this->_rpc_database;
 			}
-			$GLOBALS['dbconnection'] = new \PDO( $dsn, $username, $password );
+
+			$dboptions = [];
+
+			if( ! empty( $options['sql_mode'] ) ) {
+				$dboptions[\PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET sql_mode="' . $options['sql_mode'] . '"';
+			}
+
+			$GLOBALS['dbconnection'] = new \PDO( $dsn, $username, $password, $dboptions );
 		}
 		
 		
@@ -91,6 +98,7 @@ class MySQL extends Adapter
 		$this->getHandle()->setAttribute( \PDO::ATTR_CASE, \PDO::CASE_LOWER );
 		$this->getHandle()->setAttribute( \PDO::ATTR_AUTOCOMMIT, true );
 		
+
 		return $this;
 	}
 	
