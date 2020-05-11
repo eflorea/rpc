@@ -97,10 +97,7 @@ class MySQL extends Adapter
 		$this->getHandle()->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
 		$this->getHandle()->setAttribute( \PDO::ATTR_CASE, \PDO::CASE_LOWER );
 		$this->getHandle()->setAttribute( \PDO::ATTR_AUTOCOMMIT, true );
-
-		if ( ! empty( $GLOBALS['SQL_MODE'] ) ) {
-			$this->getHandle()->setAttribute( \PDO::MYSQL_ATTR_INIT_COMMAND, $GLOBALS['SQL_MODE'] );
-		}
+		
 
 		return $this;
 	}
