@@ -1,5 +1,6 @@
 {
     "name": "jwele329/rpc",
+    "version": "1.1.2",
     "license": "MIT",
     "description": "Reusable PHP Components",
     "authors": [
