@@ -128,7 +128,7 @@ class Db
 		$options = array();
 
 		if (! empty( $info['sql_mode'] ) ) {
-			$option['sql_mode'] = $info['sql_mode'];
+			$options['sql_mode'] = $info['sql_mode'];
 		}
 
 		$database->connect( $info['username'], $info['password'], $options );
