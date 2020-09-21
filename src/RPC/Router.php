@@ -181,9 +181,20 @@ class Router
 			Validate CSRF
 			- default it will validate POST method
 			- if called like validateCSRF( 'get' ) it will validate the CSRF from get
+
+			Check .env for DISABLE_CSRF. ignore_csrf can be used in a more granular
+			way to enable CSRF for a particular command when its disabled globally
+			in .env
+
+			Disabled CSRF:
+			DISBABLE_CSRF === true || ignore_csrf === true
+			DISABLE_CSRF === true || ignore_csrf undefined or false
+
+			Enabled CSRF:
+			DISABLE_CSRF undefined or false && ignore_csrf is undefined or false
+
 		*/
-		if( ! isset( $command->ignore_csrf ) )
-		{
+		if ( empty( $command->ignore_csrf ) || ! getenv( 'DISABLE_CSRF' ) ) {
 			$this->request->validateCSRF();
 		}
 
